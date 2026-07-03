@@ -35,6 +35,10 @@
     coins: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><ellipse cx="9" cy="7" rx="5" ry="2.5"/><path d="M4 7v5c0 1.4 2.2 2.5 5 2.5s5-1.1 5-2.5V7"/><path d="M14 10.5c.6.2 1.3.3 2 .3 2.8 0 5-1.1 5-2.5s-2.2-2.5-5-2.5c-.8 0-1.6.1-2.3.3M14 15c.6.2 1.3.3 2 .3 2.8 0 5-1.1 5-2.5"/></svg>',
     users: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><circle cx="9" cy="8" r="3.2"/><path d="M3.5 20a5.5 5.5 0 0 1 11 0M16 5.2a3.2 3.2 0 0 1 0 6M18 20a5.5 5.5 0 0 0-3-4.9"/></svg>',
     globe: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><path d="M3 12h18M12 3a14 14 0 0 1 0 18 14 14 0 0 1 0-18Z"/></svg>',
+    sun: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="4"/><path d="M12 2v2M12 20v2M4.9 4.9l1.4 1.4M17.7 17.7l1.4 1.4M2 12h2M20 12h2M4.9 19.1l1.4-1.4M17.7 6.3l1.4-1.4"/></svg>',
+    moon: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M21 12.8A9 9 0 1 1 11.2 3a7 7 0 0 0 9.8 9.8Z"/></svg>',
+    up: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 19V5M6 11l6-6 6 6"/></svg>',
+    whatsapp: '<svg viewBox="0 0 24 24" fill="currentColor"><path d="M12.04 2C6.58 2 2.13 6.45 2.13 11.9c0 1.76.46 3.45 1.32 4.95L2 22l5.3-1.38a9.9 9.9 0 0 0 4.74 1.2h.01c5.46 0 9.9-4.45 9.9-9.9C21.95 6.45 17.5 2 12.04 2Zm5.8 14.06c-.24.68-1.4 1.3-1.94 1.35-.5.05-1.13.07-1.82-.11-.42-.13-.96-.31-1.65-.61-2.9-1.25-4.79-4.17-4.94-4.36-.14-.19-1.18-1.57-1.18-3s.75-2.13 1.02-2.42c.26-.29.57-.36.76-.36l.55.01c.18.01.42-.07.65.5.24.58.82 2.01.89 2.15.07.14.12.31.02.5-.09.19-.14.31-.28.48-.14.17-.29.37-.42.5-.14.14-.28.29-.12.57.16.29.72 1.19 1.55 1.92 1.06.95 1.96 1.24 2.24 1.38.28.14.44.12.6-.07.17-.19.69-.8.87-1.08.18-.29.36-.24.61-.14.25.09 1.6.75 1.87.9.28.14.46.21.53.32.07.12.07.65-.17 1.33Z"/></svg>',
   };
   window.ICONS = I;
 
@@ -118,6 +122,8 @@
           '<a class="nav-cta-mobile btn btn-block" href="demande-offre.html">Demander une offre ' + I.arrow + '</a>' +
         '</nav>' +
         '<div class="nav-cta">' +
+          '<button class="theme-toggle" aria-label="Changer de thème clair/sombre" title="Thème clair / sombre">' +
+            '<span class="sun">' + I.sun + '</span><span class="moon">' + I.moon + '</span></button>' +
           '<a class="btn nav-cta-desktop" href="demande-offre.html">Demander une offre ' + I.arrow + '</a>' +
           '<button class="nav-toggle" aria-label="Ouvrir le menu" aria-expanded="false"><span></span></button>' +
         '</div>' +
@@ -209,6 +215,102 @@
     }
   }
 
+  /* ---------- Thème clair / sombre ---------- */
+  function initTheme() {
+    var root = document.documentElement;
+    var apply = function (t) {
+      root.setAttribute("data-theme", t);
+      try { localStorage.setItem("fc-theme", t); } catch (e) {}
+      var meta = document.querySelector('meta[name="theme-color"]');
+      if (meta) meta.setAttribute("content", t === "dark" ? "#0b0f16" : "#ffffff");
+    };
+    // état initial déjà posé par le script inline ; on synchronise juste la meta
+    var cur = root.getAttribute("data-theme") || "light";
+    apply(cur);
+    // activer les transitions après le 1er rendu (évite le flash)
+    requestAnimationFrame(function () { root.classList.add("theme-ready"); });
+    var btn = document.querySelector(".theme-toggle");
+    if (btn) btn.addEventListener("click", function () {
+      var next = root.getAttribute("data-theme") === "dark" ? "light" : "dark";
+      apply(next);
+    });
+    // suivre le système si l'utilisateur n'a jamais choisi
+    try {
+      var mq = window.matchMedia("(prefers-color-scheme: dark)");
+      mq.addEventListener && mq.addEventListener("change", function (e) {
+        if (!localStorage.getItem("fc-theme-user")) apply(e.matches ? "dark" : "light");
+      });
+      if (btn) btn.addEventListener("click", function () { try { localStorage.setItem("fc-theme-user", "1"); } catch (e) {} });
+    } catch (e) {}
+  }
+
+  /* ---------- UI de scroll : progression + retour haut ---------- */
+  function initScrollUI() {
+    var bar = document.createElement("div");
+    bar.className = "scroll-progress";
+    document.body.appendChild(bar);
+
+    var top = document.createElement("button");
+    top.className = "to-top";
+    top.setAttribute("aria-label", "Remonter en haut de la page");
+    top.innerHTML = I.up;
+    document.body.appendChild(top);
+    top.addEventListener("click", function () { window.scrollTo({ top: 0, behavior: "smooth" }); });
+
+    var ticking = false;
+    var update = function () {
+      var h = document.documentElement;
+      var max = h.scrollHeight - h.clientHeight;
+      var p = max > 0 ? (h.scrollTop || document.body.scrollTop) / max : 0;
+      bar.style.width = (p * 100).toFixed(2) + "%";
+      top.classList.toggle("show", (h.scrollTop || 0) > 600);
+      ticking = false;
+    };
+    window.addEventListener("scroll", function () {
+      if (!ticking) { requestAnimationFrame(update); ticking = true; }
+    }, { passive: true });
+    update();
+  }
+
+  /* ---------- Bouton contact flottant ---------- */
+  function initFab() {
+    var wa = (CFG.contact && CFG.contact.whatsapp) ? CFG.contact.whatsapp.replace(/\D/g, "") : "";
+    var href = wa ? "https://wa.me/" + wa : "demande-offre.html";
+    var label = wa ? "WhatsApp" : "Devis gratuit";
+    var a = document.createElement("a");
+    a.className = "fab-contact";
+    a.href = href;
+    if (wa) { a.target = "_blank"; a.rel = "noopener"; }
+    a.setAttribute("aria-label", wa ? "Nous écrire sur WhatsApp" : "Demander un devis gratuit");
+    a.innerHTML = (wa ? I.whatsapp : I.chat) + '<span class="fab-label">' + label + "</span>";
+    document.body.appendChild(a);
+    setTimeout(function () { a.classList.add("show"); }, 900);
+  }
+
+  /* ---------- Bandeau cookies (nLPD) ---------- */
+  function initCookieBar() {
+    try { if (localStorage.getItem("fc-cookie") === "ok") return; } catch (e) { return; }
+    var bar = document.createElement("div");
+    bar.className = "cookie-bar";
+    bar.setAttribute("role", "dialog");
+    bar.setAttribute("aria-label", "Information sur les cookies");
+    bar.innerHTML =
+      '<p>Ce site utilise uniquement des éléments strictement nécessaires à son bon fonctionnement — aucun traceur publicitaire. En savoir plus dans notre <a href="confidentialite.html">politique de confidentialité</a>.</p>' +
+      '<div class="cookie-actions">' +
+        '<button class="btn btn-ghost" id="ck-no">Refuser</button>' +
+        '<button class="btn" id="ck-ok">J\'ai compris</button>' +
+      '</div>';
+    document.body.appendChild(bar);
+    requestAnimationFrame(function () { setTimeout(function () { bar.classList.add("show"); }, 500); });
+    var close = function () {
+      try { localStorage.setItem("fc-cookie", "ok"); } catch (e) {}
+      bar.classList.remove("show");
+      setTimeout(function () { bar.remove(); }, 500);
+    };
+    bar.querySelector("#ck-ok").addEventListener("click", close);
+    bar.querySelector("#ck-no").addEventListener("click", close);
+  }
+
   /* ---------- Reveal au scroll ---------- */
   function initReveal() {
     var els = document.querySelectorAll("[data-reveal]");
@@ -290,6 +392,10 @@
     buildFooter();
     renderServices();
     fillConfig();
+    initTheme();
+    initScrollUI();
+    initFab();
+    initCookieBar();
     initReveal();
     initCounters();
     initFaq();
