@@ -1,0 +1,126 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Contact — Fri-Consult, courtier en assurances à Rossens (FR)</title>
+<meta name="description" content="Contactez Fri-Consult Sàrl à Rossens (Fribourg). Téléphone, e-mail, adresse et horaires. Écrivez-nous ou demandez une offre d'assurance gratuite en Suisse.">
+<meta name="theme-color" content="#0a1020">
+<link rel="canonical" href="https://www.fri-consult.ch/contact.html">
+<meta property="og:title" content="Contact — Fri-Consult">
+<link rel="icon" href="assets/img/favicon.svg" type="image/svg+xml">
+<link rel="manifest" href="site.webmanifest">
+<link rel="stylesheet" href="assets/css/styles.css">
+</head>
+<body>
+<a class="skip-link" href="#main">Aller au contenu</a>
+<header id="site-header"></header>
+
+<main id="main">
+  <section class="page-hero" style="padding-bottom:clamp(20px,3vw,32px)">
+    <div class="hero-bg"></div>
+    <div class="container">
+      <nav class="breadcrumb" data-reveal><a href="index.html">Accueil</a><span>›</span><span>Contact</span></nav>
+      <h1 class="display" data-reveal data-reveal-delay="1">Parlons de vos assurances.</h1>
+      <p class="lead" data-reveal data-reveal-delay="2">Une question, un projet, un besoin de conseil ? Écrivez-nous ou appelez-nous : nous vous répondons rapidement, avec le sourire.</p>
+    </div>
+  </section>
+
+  <section class="section" style="padding-top:clamp(16px,3vw,28px)">
+    <div class="container">
+      <div class="contact-grid">
+
+        <!-- Coordonnées -->
+        <div class="contact-info">
+          <div class="info-card" data-reveal>
+            <span class="i-ico" id="ic-ph"></span>
+            <div><b>Téléphone</b><a data-cfg="phone" href="#">…</a></div>
+          </div>
+          <div class="info-card" data-reveal data-reveal-delay="1">
+            <span class="i-ico" id="ic-mail"></span>
+            <div><b>E-mail</b><a data-cfg="email" href="#">…</a></div>
+          </div>
+          <div class="info-card" data-reveal data-reveal-delay="2">
+            <span class="i-ico" id="ic-pin"></span>
+            <div><b>Adresse</b><span data-cfg="address">…</span><br><span data-cfg="canton">…</span>, Suisse</div>
+          </div>
+          <div class="info-card" data-reveal data-reveal-delay="3">
+            <span class="i-ico" id="ic-clock"></span>
+            <div><b>Horaires</b><span id="hours-list"></span></div>
+          </div>
+          <div class="map-wrap" data-reveal>
+            <iframe class="map-embed" title="Localisation de Fri-Consult à Rossens" loading="lazy" referrerpolicy="no-referrer-when-downgrade"
+              src="https://www.openstreetmap.org/export/embed.html?bbox=7.0%2C46.68%2C7.12%2C46.74&amp;layer=mapnik&amp;marker=46.71%2C7.06"></iframe>
+          </div>
+        </div>
+
+        <!-- Formulaire -->
+        <div class="form-card" data-reveal data-reveal-delay="1">
+          <h3 class="h3" style="margin-bottom:6px">Écrivez-nous</h3>
+          <p class="text-muted" style="margin-bottom:24px">Nous vous répondons généralement sous 24 h ouvrées.</p>
+          <form id="contact-form" novalidate>
+            <div class="field-row">
+              <div class="field">
+                <label for="c-nom">Nom complet <span class="req">*</span></label>
+                <input class="input" type="text" id="c-nom" name="nom" autocomplete="name" required>
+                <span class="err-msg">Champ requis.</span>
+              </div>
+              <div class="field">
+                <label for="c-email">E-mail <span class="req">*</span></label>
+                <input class="input" type="email" id="c-email" name="email" autocomplete="email" required>
+                <span class="err-msg">E-mail valide requis.</span>
+              </div>
+            </div>
+            <div class="field-row">
+              <div class="field">
+                <label for="c-phone">Téléphone</label>
+                <input class="input" type="tel" id="c-phone" name="phone" autocomplete="tel">
+              </div>
+              <div class="field">
+                <label for="c-sujet">Sujet</label>
+                <select class="select" id="c-sujet" name="sujet">
+                  <option value="" disabled selected>Choisir…</option>
+                  <option>Demande d'offre</option>
+                  <option>Question sur un contrat</option>
+                  <option>Prévoyance / 3e pilier</option>
+                  <option>Entreprise / indépendant</option>
+                  <option>Autre</option>
+                </select>
+              </div>
+            </div>
+            <div class="field">
+              <label for="c-message">Votre message <span class="req">*</span></label>
+              <textarea class="textarea" id="c-message" name="message" required placeholder="Comment pouvons-nous vous aider ?"></textarea>
+              <span class="err-msg">Merci d'écrire votre message.</span>
+            </div>
+            <label class="consent" style="margin-bottom:8px">
+              <input type="checkbox" name="consent" required>
+              <span>J'accepte que mes données soient traitées selon la <a href="confidentialite.html" style="color:var(--brand-600);text-decoration:underline" target="_blank">politique de confidentialité</a>. <span class="req">*</span></span>
+            </label>
+            <div id="contact-status" class="form-status" role="status" aria-live="polite"></div>
+            <button type="submit" class="btn btn-lg btn-block" style="margin-top:8px">Envoyer le message</button>
+          </form>
+        </div>
+
+      </div>
+    </div>
+  </section>
+</main>
+
+<footer id="site-footer"></footer>
+<script src="assets/js/config.js"></script>
+<script src="assets/js/main.js"></script>
+<script src="assets/js/form.js"></script>
+<script>
+  document.addEventListener("DOMContentLoaded", function () {
+    var I = window.ICONS, C = (window.SITE_CONFIG||{}).contact||{};
+    var set = function (id, n) { var el = document.getElementById(id); if (el) el.innerHTML = I[n]; };
+    set("ic-ph","phone"); set("ic-mail","mail"); set("ic-pin","pin"); set("ic-clock","clock");
+    var hl = document.getElementById("hours-list");
+    if (hl && C.hours) hl.innerHTML = C.hours.map(function (h) {
+      return '<span style="display:block;color:var(--ink-soft)">' + h.d + ' · ' + h.h + '</span>';
+    }).join("");
+  });
+</script>
+</body>
+</html>

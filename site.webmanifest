@@ -1,0 +1,13 @@
+{
+  "name": "Fri-Consult — Courtier en assurances",
+  "short_name": "Fri-Consult",
+  "description": "Votre courtier en assurances indépendant en Suisse.",
+  "lang": "fr-CH",
+  "start_url": "/index.html",
+  "display": "standalone",
+  "background_color": "#ffffff",
+  "theme_color": "#0a1020",
+  "icons": [
+    { "src": "assets/img/favicon.svg", "sizes": "any", "type": "image/svg+xml", "purpose": "any maskable" }
+  ]
+}

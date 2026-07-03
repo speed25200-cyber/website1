@@ -1,0 +1,91 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Nos assurances — Tout type de couverture en Suisse | Fri-Consult</title>
+<meta name="description" content="Découvrez toutes les assurances gérées par Fri-Consult : maladie (LAMal), véhicule, ménage & RC, 3e pilier & prévoyance, protection juridique, voyage, entreprise, hypothèques. Demandez votre offre gratuite.">
+<meta name="theme-color" content="#0a1020">
+<link rel="canonical" href="https://www.fri-consult.ch/assurances.html">
+<meta property="og:title" content="Nos assurances — Fri-Consult">
+<meta property="og:description" content="Tout type d'assurance en Suisse, un seul interlocuteur.">
+<link rel="icon" href="assets/img/favicon.svg" type="image/svg+xml">
+<link rel="manifest" href="site.webmanifest">
+<link rel="stylesheet" href="assets/css/styles.css">
+</head>
+<body>
+<a class="skip-link" href="#main">Aller au contenu</a>
+<header id="site-header"></header>
+
+<main id="main">
+  <section class="page-hero">
+    <div class="hero-bg"></div>
+    <div class="container">
+      <nav class="breadcrumb" data-reveal><a href="index.html">Accueil</a><span>›</span><span>Nos assurances</span></nav>
+      <h1 class="display" data-reveal data-reveal-delay="1">Tout type d'assurance,<br>un seul interlocuteur.</h1>
+      <p class="lead" data-reveal data-reveal-delay="2">Particuliers, familles, indépendants et entreprises : nous couvrons l'ensemble de vos besoins en Suisse. Choisissez un domaine et demandez votre offre gratuite et personnalisée.</p>
+      <div class="hero-actions" data-reveal data-reveal-delay="3">
+        <a class="btn btn-lg" href="demande-offre.html">Demander une offre</a>
+        <a class="btn btn-ghost btn-lg" href="contact.html">Poser une question</a>
+      </div>
+    </div>
+  </section>
+
+  <section class="section" style="padding-top:clamp(20px,4vw,40px)">
+    <div class="container">
+      <div class="grid cols-3" id="assurances-grid">
+        <noscript><p>Activez JavaScript pour afficher le détail de nos assurances, ou <a href="contact.html">contactez-nous</a> directement.</p></noscript>
+      </div>
+    </div>
+  </section>
+
+  <!-- Comparatif / valeur -->
+  <section class="section section-tint">
+    <div class="container">
+      <div class="feature">
+        <div class="feature-media" data-reveal>
+          <div style="text-align:center;padding:40px">
+            <div style="font-size:clamp(3rem,7vw,5rem);font-weight:700;letter-spacing:-.04em;background:linear-gradient(120deg,var(--brand-500),var(--accent));-webkit-background-clip:text;background-clip:text;color:transparent">30+</div>
+            <p style="color:var(--ink-soft);font-weight:600;margin-top:8px">assureurs comparés<br>en un seul rendez-vous</p>
+          </div>
+        </div>
+        <div data-reveal data-reveal-delay="1">
+          <span class="eyebrow">Notre méthode</span>
+          <h2 class="h2" style="margin-top:14px">Une comparaison objective, pas un argumentaire de vente</h2>
+          <p class="lead" style="margin-top:16px">Nous mettons en concurrence les principaux assureurs suisses pour chaque garantie, et vous présentons uniquement ce qui sert vos intérêts.</p>
+          <ul>
+            <li><span id="ci1"></span><span>Analyse complète de votre situation et de vos contrats actuels</span></li>
+            <li><span id="ci2"></span><span>Comparaison couverture / prix, sans clause cachée</span></li>
+            <li><span id="ci3"></span><span>Recommandation claire, chiffrée et expliquée simplement</span></li>
+            <li><span id="ci4"></span><span>Gestion des résiliations et des sinistres pour vous</span></li>
+          </ul>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- CTA -->
+  <section class="section">
+    <div class="container">
+      <div class="cta-band" data-reveal>
+        <h2 class="h2">Vous ne savez pas par où commencer ?</h2>
+        <p class="lead">Dites-nous simplement ce que vous voulez protéger. Nous nous occupons du reste.</p>
+        <div class="hero-actions">
+          <a class="btn btn-light btn-lg" href="demande-offre.html">Obtenir mon offre gratuite</a>
+        </div>
+      </div>
+    </div>
+  </section>
+</main>
+
+<footer id="site-footer"></footer>
+<script src="assets/js/config.js"></script>
+<script src="assets/js/main.js"></script>
+<script>
+  document.addEventListener("DOMContentLoaded", function () {
+    var I = window.ICONS;
+    ["ci1","ci2","ci3","ci4"].forEach(function (id) { var el = document.getElementById(id); if (el) el.innerHTML = I.checkc; });
+  });
+</script>
+</body>
+</html>

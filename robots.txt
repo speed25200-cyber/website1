@@ -1,0 +1,5 @@
+User-agent: *
+Allow: /
+Disallow: /demande-offre.html
+
+Sitemap: https://www.fri-consult.ch/sitemap.xml
