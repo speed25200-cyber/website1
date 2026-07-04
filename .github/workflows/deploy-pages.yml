@@ -28,7 +28,7 @@ jobs:
         run: |
           mkdir -p _site
           # Copie tout sauf le backend, les workflows et le dossier git
-          rsync -a --exclude='_site' --exclude='.git' --exclude='.github' --exclude='server' ./ _site/
+          rsync -a --exclude='_site' --exclude='.git' --exclude='.github' --exclude='server' --exclude='admin.html' ./ _site/
           # Empêche Jekyll de traiter le site (sert les fichiers tels quels)
           touch _site/.nojekyll
 

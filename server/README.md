@@ -27,14 +27,20 @@ docker run -p 8787:8787 -e FC_API_TOKEN=xxxx fri-consult-api
 | `GET` | `/content/<name>.json` | – | lecture publique du contenu |
 | `GET` | `/api/content/<collection>` | – | lecture d'une collection |
 | `PUT` | `/api/content/<collection>` | 🔒 | **écrit** une collection (validée par schéma) |
-| `POST` | `/api/leads` | – | crée un **lead** (`fri-consult/lead@1`) |
+| `POST` | `/api/leads` | – | crée un **lead** (`fri-consult/lead@1`), **pré-trié** à l'entrée |
 | `GET` | `/api/leads` | 🔒 | liste les leads (`?status=`, `?limit=`) |
 | `GET` | `/api/leads/<id>` | 🔒 | un lead |
-| `PATCH` | `/api/leads/<id>` | 🔒 | maj `status` / `notes` / `assignee` |
+| `PATCH` | `/api/leads/<id>` | 🔒 | traite : `status` / `notes` / `response` / `assignee` |
+| `GET` | `/api/stats` | 🔒 | agrégats de la file (statut / catégorie / priorité) |
+| `GET` | `/admin` | – | **console Cronos / conseiller** (auth via les appels API) |
 
 🔒 = en-tête `Authorization: Bearer <FC_API_TOKEN>`. Sans `FC_API_TOKEN`, les routes protégées renvoient `503` (sécurisé par défaut).
 
 `collection` ∈ `site, services, posts, testimonials, faq`. Toute écriture est **validée contre le schéma** ; en cas d'erreur → `422` avec le détail.
+
+## Cronos : traitement des demandes
+
+Toute demande POSTée sur `/api/leads` est **pré-triée** par [`intake.js`](intake.js) (déterministe, sans IA) : un objet `triage` (catégorie, priorité 1-4 + SLA, `urgent`/`complaint`, tags, résumé, brouillon d'accusé de réception multilingue) est attaché au lead. **Cronos** (l'agent) relève la file, rédige la vraie réponse conseil et clôture via `PATCH`. Boucle complète : [`../AGENT.md`](../AGENT.md) §7. Interface web équivalente : `/admin`.
 
 ## Exemples
 

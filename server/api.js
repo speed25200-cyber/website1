@@ -32,6 +32,7 @@ var fs = require("fs");
 var path = require("path");
 var crypto = require("crypto");
 var validate = require("./schema-validate");
+var intake = require("./intake");
 
 var ROOT = process.env.FC_ROOT ? path.resolve(process.env.FC_ROOT) : path.resolve(__dirname, "..");
 var CONTENT_DIR = path.join(ROOT, "content");
@@ -117,8 +118,10 @@ function updateLead(id, patch) {
     var all = readLeads();
     var i = all.findIndex(function (l) { return l.id === id; });
     if (i === -1) return;
-    ["status", "notes", "assignee"].forEach(function (k) { if (patch[k] !== undefined) all[i][k] = patch[k]; });
+    // Champs que Cronos Code (ou un conseiller) peut mettre à jour en traitant.
+    ["status", "notes", "assignee", "response", "triage"].forEach(function (k) { if (patch[k] !== undefined) all[i][k] = patch[k]; });
     all[i].updatedAt = new Date().toISOString();
+    if (patch.status === "done" || patch.status === "resolved") all[i].resolvedAt = all[i].resolvedAt || new Date().toISOString();
     updated = all[i];
     fs.writeFileSync(LEADS_FILE, JSON.stringify(all, null, 2));
   });
@@ -154,7 +157,24 @@ var server = http.createServer(async function (req, res) {
   if (method === "OPTIONS") return send(res, 204, "");
 
   try {
-    if (p === "/api/health") return json(res, 200, { ok: true, service: "fri-consult-api", contract: "fri-consult/content@1", time: new Date().toISOString() });
+    if (p === "/api/health") return json(res, 200, { ok: true, service: "fri-consult-api", contract: "fri-consult/content@1", intake: intake.version, time: new Date().toISOString() });
+
+    // Console Cronos / conseiller (page cliente ; l'auth se fait au niveau des appels API).
+    if (p === "/admin" || p === "/admin/") return serveStatic(req, res, "/admin.html");
+
+    // GET /api/stats (auth) — tableau de bord de la file
+    if (p === "/api/stats" && method === "GET") {
+      if (!requireAuth(req, res)) return;
+      var leads = readLeads();
+      var byStatus = {}, byCategory = {}, byPriority = {};
+      leads.forEach(function (l) {
+        var s = l.status || "new"; byStatus[s] = (byStatus[s] || 0) + 1;
+        var c = (l.triage && l.triage.category) || "general"; byCategory[c] = (byCategory[c] || 0) + 1;
+        var pr = (l.triage && l.triage.priorityLabel) || "normale"; byPriority[pr] = (byPriority[pr] || 0) + 1;
+      });
+      var open = leads.filter(function (l) { return l.status !== "done" && l.status !== "resolved" && l.status !== "archived"; }).length;
+      return json(res, 200, { total: leads.length, open: open, byStatus: byStatus, byCategory: byCategory, byPriority: byPriority });
+    }
 
     if (p === "/api/manifest") {
       var mf = JSON.parse(fs.readFileSync(path.join(CONTENT_DIR, "manifest.json"), "utf8"));
@@ -170,8 +190,11 @@ var server = http.createServer(async function (req, res) {
       lead.id = crypto.randomUUID();
       lead.receivedAt = new Date().toISOString();
       lead.status = lead.status || "new";
+      // Cronos Code lit cette file : on pré-trie chaque demande (déterministe,
+      // sans IA) pour lui livrer catégorie/priorité/tags/brouillon prêts.
+      try { lead.triage = intake.triage(lead); } catch (e) { lead.triage = { error: String(e.message || e) }; }
       await appendLead(lead);
-      return json(res, 201, { id: lead.id, status: lead.status });
+      return json(res, 201, { id: lead.id, status: lead.status, triage: lead.triage });
     }
 
     // GET /api/leads (auth)

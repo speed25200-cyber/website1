@@ -1,0 +1,320 @@
+<!DOCTYPE html>
+<html lang="fr" data-theme="dark">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="robots" content="noindex, nofollow">
+<link rel="icon" href="assets/img/favicon.svg" type="image/svg+xml">
+<title>Console Cronos — Fri-Consult</title>
+<style>
+  :root{
+    --bg:#0b0f14; --panel:#111823; --panel2:#0e141d; --line:rgba(255,255,255,.08);
+    --txt:#e8edf3; --mut:#93a1b2; --brand:#12a594; --brand2:#0e7f74;
+    --gold:#d9b877; --ok:#37c78a; --warn:#f0b34a; --crit:#f0654a; --hi:#ffd66b;
+    --radius:16px; --shadow:0 10px 40px rgba(0,0,0,.4);
+  }
+  *{box-sizing:border-box}
+  body{margin:0;background:radial-gradient(1200px 700px at 80% -10%,rgba(18,165,148,.10),transparent),var(--bg);
+    color:var(--txt);font:15px/1.5 -apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;-webkit-font-smoothing:antialiased}
+  a{color:var(--brand)}
+  .wrap{max-width:1180px;margin:0 auto;padding:24px 20px 80px}
+  header.top{display:flex;align-items:center;gap:14px;margin-bottom:22px;flex-wrap:wrap}
+  .logo{font-weight:700;font-size:19px;letter-spacing:.2px}
+  .logo b{color:var(--brand)}
+  .pill{font-size:12px;color:var(--mut);border:1px solid var(--line);padding:4px 10px;border-radius:999px}
+  .spacer{flex:1}
+  .btn{appearance:none;border:1px solid var(--line);background:var(--panel);color:var(--txt);
+    padding:9px 14px;border-radius:11px;font-size:14px;font-weight:600;cursor:pointer;transition:.15s}
+  .btn:hover{border-color:var(--brand);transform:translateY(-1px)}
+  .btn.pri{background:linear-gradient(180deg,var(--brand),var(--brand2));border-color:transparent;color:#04120f}
+  .btn.ghost{background:transparent}
+  .btn.sm{padding:6px 10px;font-size:13px;border-radius:9px}
+  input,select,textarea{width:100%;background:var(--panel2);border:1px solid var(--line);color:var(--txt);
+    padding:10px 12px;border-radius:11px;font:inherit;outline:none}
+  input:focus,select:focus,textarea:focus{border-color:var(--brand)}
+  label.fld{display:block;margin:0 0 12px}
+  label.fld span{display:block;font-size:12.5px;color:var(--mut);margin-bottom:5px}
+  .card{background:var(--panel);border:1px solid var(--line);border-radius:var(--radius);box-shadow:var(--shadow)}
+  .gate{max-width:440px;margin:8vh auto;padding:26px}
+  .gate h1{font-size:20px;margin:0 0 6px}
+  .gate p{color:var(--mut);margin:0 0 18px;font-size:14px}
+  .stats{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:12px;margin-bottom:20px}
+  .stat{padding:16px 18px}
+  .stat .n{font-size:26px;font-weight:700}
+  .stat .l{font-size:12.5px;color:var(--mut);margin-top:2px}
+  .toolbar{display:flex;gap:10px;align-items:center;margin-bottom:14px;flex-wrap:wrap}
+  .toolbar .grow{flex:1;min-width:180px}
+  table{width:100%;border-collapse:collapse}
+  th,td{text-align:left;padding:11px 12px;border-bottom:1px solid var(--line);vertical-align:top}
+  th{font-size:12px;text-transform:uppercase;letter-spacing:.5px;color:var(--mut);font-weight:600}
+  tr.row{cursor:pointer;transition:.12s}
+  tr.row:hover{background:rgba(255,255,255,.03)}
+  .tag{display:inline-block;font-size:11.5px;padding:2px 8px;border-radius:999px;border:1px solid var(--line);color:var(--mut);margin:2px 4px 2px 0}
+  .badge{display:inline-block;font-size:11.5px;font-weight:700;padding:3px 9px;border-radius:999px}
+  .b-faible{background:rgba(147,161,178,.15);color:var(--mut)}
+  .b-normale{background:rgba(18,165,148,.16);color:var(--brand)}
+  .b-elevee{background:rgba(240,179,74,.16);color:var(--warn)}
+  .b-critique{background:rgba(240,101,74,.18);color:var(--crit)}
+  .st{display:inline-block;font-size:11.5px;font-weight:600;padding:3px 9px;border-radius:999px;border:1px solid var(--line);color:var(--mut)}
+  .st-new{color:var(--hi);border-color:rgba(255,214,107,.4)}
+  .st-progress{color:var(--brand);border-color:rgba(18,165,148,.4)}
+  .st-done,.st-resolved{color:var(--ok);border-color:rgba(55,199,138,.4)}
+  .muted{color:var(--mut)}
+  .empty{padding:40px;text-align:center;color:var(--mut)}
+  /* Drawer détail */
+  .overlay{position:fixed;inset:0;background:rgba(0,0,0,.55);backdrop-filter:blur(3px);opacity:0;pointer-events:none;transition:.2s;z-index:40}
+  .overlay.show{opacity:1;pointer-events:auto}
+  .drawer{position:fixed;top:0;right:0;height:100%;width:min(560px,100%);background:var(--panel);border-left:1px solid var(--line);
+    transform:translateX(100%);transition:.25s cubic-bezier(.2,.8,.2,1);z-index:50;overflow-y:auto;box-shadow:-20px 0 60px rgba(0,0,0,.5)}
+  .drawer.show{transform:none}
+  .drawer .d-in{padding:22px}
+  .drawer h2{font-size:17px;margin:0 0 4px}
+  .kv{display:grid;grid-template-columns:120px 1fr;gap:6px 10px;font-size:14px;margin:14px 0}
+  .kv b{color:var(--mut);font-weight:600}
+  .sect{margin:18px 0 8px;font-size:12px;text-transform:uppercase;letter-spacing:.5px;color:var(--mut)}
+  pre.reply{white-space:pre-wrap;background:var(--panel2);border:1px solid var(--line);border-radius:12px;padding:12px 14px;font:inherit;margin:0}
+  .row-actions{display:flex;gap:8px;flex-wrap:wrap;margin-top:8px}
+  .hide{display:none!important}
+  .err{color:var(--crit);font-size:13px;margin-top:8px;min-height:16px}
+  .x{cursor:pointer;color:var(--mut);font-size:22px;line-height:1;border:none;background:none}
+  @media(max-width:640px){ th.hidecol,td.hidecol{display:none} }
+</style>
+</head>
+<body>
+
+<!-- Écran de connexion -->
+<div id="gate" class="card gate">
+  <h1>Console <span style="color:var(--brand)">Cronos</span></h1>
+  <p>Tableau de bord interne des demandes. Renseignez l'adresse de l'API et le jeton (Bearer).</p>
+  <label class="fld"><span>Adresse de l'API</span><input id="g-base" placeholder="https://api.fri-consult.ch" autocomplete="off"></label>
+  <label class="fld"><span>Jeton (FC_API_TOKEN)</span><input id="g-token" type="password" placeholder="••••••••••••" autocomplete="off"></label>
+  <button class="btn pri" id="g-go" style="width:100%">Ouvrir la console</button>
+  <div class="err" id="g-err"></div>
+</div>
+
+<!-- Application -->
+<div id="app" class="wrap hide">
+  <header class="top">
+    <div class="logo"><b>Cronos</b> · Fri-Consult</div>
+    <span class="pill" id="apibadge"></span>
+    <div class="spacer"></div>
+    <button class="btn ghost sm" id="refresh">↻ Actualiser</button>
+    <button class="btn ghost sm" id="logout">Quitter</button>
+  </header>
+
+  <div class="stats" id="stats"></div>
+
+  <div class="toolbar">
+    <input class="grow" id="search" placeholder="Rechercher (nom, e-mail, tag, message…)">
+    <select id="fstatus" style="width:auto">
+      <option value="">Tous les statuts</option>
+      <option value="new">Nouveau</option>
+      <option value="in_progress">En cours</option>
+      <option value="done">Traité</option>
+      <option value="archived">Archivé</option>
+    </select>
+    <select id="fpriority" style="width:auto">
+      <option value="">Toutes priorités</option>
+      <option value="critique">Critique</option>
+      <option value="élevée">Élevée</option>
+      <option value="normale">Normale</option>
+      <option value="faible">Faible</option>
+    </select>
+  </div>
+
+  <div class="card" style="overflow:hidden">
+    <table>
+      <thead><tr>
+        <th>Priorité</th><th>Type</th><th>Client</th>
+        <th class="hidecol">Domaine</th><th class="hidecol">Reçu</th><th>Statut</th>
+      </tr></thead>
+      <tbody id="rows"></tbody>
+    </table>
+    <div class="empty hide" id="empty">Aucune demande pour l'instant.</div>
+  </div>
+</div>
+
+<!-- Détail -->
+<div class="overlay" id="overlay"></div>
+<aside class="drawer" id="drawer"><div class="d-in" id="drawer-in"></div></aside>
+
+<script>
+(function(){
+  "use strict";
+  var $=function(s,c){return (c||document).querySelector(s)},
+      $$=function(s,c){return Array.prototype.slice.call((c||document).querySelectorAll(s))};
+  var SS=window.sessionStorage;
+  var state={base:"",token:"",leads:[]};
+
+  function esc(s){return String(s==null?"":s).replace(/[<>&"]/g,function(c){return({"<":"&lt;",">":"&gt;","&":"&amp;",'"':"&quot;"})[c]})}
+  function hdr(){return {"Authorization":"Bearer "+state.token,"Content-Type":"application/json"}}
+  function api(path,opts){opts=opts||{};opts.headers=hdr();return fetch(state.base.replace(/\/+$/,"")+path,opts)}
+  function prClass(l){return "b-"+({"élevée":"elevee","critique":"critique","normale":"normale","faible":"faible"}[l]||"normale")}
+  function stClass(s){return "st-"+({new:"new",in_progress:"progress",done:"done",resolved:"resolved"}[s]||"new")}
+  function stLabel(s){return {new:"Nouveau",in_progress:"En cours",done:"Traité",resolved:"Résolu",archived:"Archivé"}[s]||s||"Nouveau"}
+  function fmtDate(iso){try{var d=new Date(iso);return d.toLocaleString("fr-CH",{day:"2-digit",month:"2-digit",hour:"2-digit",minute:"2-digit"})}catch(e){return iso||"—"}}
+
+  /* ---- Connexion ---- */
+  function tryLogin(base,token){
+    return fetch(base.replace(/\/+$/,"")+"/api/leads?limit=1",{headers:{"Authorization":"Bearer "+token}})
+      .then(function(r){ if(r.status===200)return true; if(r.status===401)throw new Error("Jeton refusé (401)."); if(r.status===503)throw new Error("Le backend n'a pas de FC_API_TOKEN configuré."); throw new Error("Réponse inattendue ("+r.status+")."); });
+  }
+  $("#g-go").addEventListener("click",function(){
+    var base=$("#g-base").value.trim(), token=$("#g-token").value.trim();
+    var err=$("#g-err"); err.textContent="";
+    if(!base||!token){err.textContent="Adresse et jeton requis.";return;}
+    $("#g-go").textContent="Connexion…"; $("#g-go").disabled=true;
+    tryLogin(base,token).then(function(){
+      state.base=base; state.token=token;
+      SS.setItem("fc_base",base); SS.setItem("fc_token",token);
+      openApp();
+    }).catch(function(e){ err.textContent=e.message||String(e); })
+      .then(function(){ $("#g-go").textContent="Ouvrir la console"; $("#g-go").disabled=false; });
+  });
+  $("#g-token").addEventListener("keydown",function(e){if(e.key==="Enter")$("#g-go").click()});
+
+  function openApp(){
+    $("#gate").classList.add("hide"); $("#app").classList.remove("hide");
+    $("#apibadge").textContent=state.base.replace(/^https?:\/\//,"");
+    load();
+  }
+  $("#logout").addEventListener("click",function(){SS.removeItem("fc_token");location.reload()});
+  $("#refresh").addEventListener("click",load);
+  $("#search").addEventListener("input",render);
+  $("#fstatus").addEventListener("change",render);
+  $("#fpriority").addEventListener("change",render);
+
+  /* ---- Chargement ---- */
+  function load(){
+    Promise.all([
+      api("/api/leads?limit=500").then(function(r){return r.json()}),
+      api("/api/stats").then(function(r){return r.ok?r.json():null}).catch(function(){return null})
+    ]).then(function(res){
+      state.leads=(res[0]&&res[0].leads)||[];
+      renderStats(res[1]);
+      render();
+    }).catch(function(e){ alert("Erreur de chargement : "+(e.message||e)); });
+  }
+
+  function renderStats(s){
+    var box=$("#stats");
+    if(!s){ box.innerHTML=""; return; }
+    var cards=[
+      ["Total",s.total],["Ouvertes",s.open],
+      ["Critiques",(s.byPriority&&s.byPriority["critique"])||0],
+      ["Nouvelles",(s.byStatus&&s.byStatus["new"])||0]
+    ];
+    box.innerHTML=cards.map(function(c){return '<div class="card stat"><div class="n">'+c[1]+'</div><div class="l">'+c[0]+'</div></div>'}).join("");
+  }
+
+  var PRRANK={"critique":4,"élevée":3,"normale":2,"faible":1};
+  function render(){
+    var q=$("#search").value.toLowerCase().trim();
+    var fs=$("#fstatus").value, fp=$("#fpriority").value;
+    var list=state.leads.filter(function(l){
+      if(fs && (l.status||"new")!==fs) return false;
+      if(fp && (l.triage&&l.triage.priorityLabel)!==fp) return false;
+      if(q){
+        var hay=[l.contact&&l.contact.firstName,l.contact&&l.contact.lastName,l.contact&&l.contact.email,
+          l.message,l.subject,(l.insurances||[]).join(" "),(l.triage&&l.triage.tags||[]).join(" ")].join(" ").toLowerCase();
+        if(hay.indexOf(q)===-1) return false;
+      }
+      return true;
+    });
+    list.sort(function(a,b){
+      var pa=PRRANK[a.triage&&a.triage.priorityLabel]||2, pb=PRRANK[b.triage&&b.triage.priorityLabel]||2;
+      if(pb!==pa)return pb-pa;
+      return (b.receivedAt||"").localeCompare(a.receivedAt||"");
+    });
+    var rows=$("#rows"); $("#empty").classList.toggle("hide",list.length>0);
+    rows.innerHTML=list.map(function(l){
+      var t=l.triage||{}, name=[(l.contact||{}).firstName,(l.contact||{}).lastName].filter(Boolean).join(" ")||"—";
+      return '<tr class="row" data-id="'+esc(l.id)+'">'+
+        '<td><span class="badge '+prClass(t.priorityLabel)+'">'+esc(t.priorityLabel||"normale")+'</span></td>'+
+        '<td>'+(l.type==="quote"?"Offre":"Contact")+'</td>'+
+        '<td><b>'+esc(name)+'</b><br><span class="muted" style="font-size:12.5px">'+esc((l.contact||{}).email||"")+'</span></td>'+
+        '<td class="hidecol">'+esc(t.categoryLabel||"—")+'</td>'+
+        '<td class="hidecol muted" style="font-size:13px">'+fmtDate(l.receivedAt)+'</td>'+
+        '<td><span class="st '+stClass(l.status)+'">'+esc(stLabel(l.status))+'</span></td>'+
+        '</tr>';
+    }).join("");
+    $$("#rows tr.row").forEach(function(tr){tr.addEventListener("click",function(){openDrawer(tr.getAttribute("data-id"))})});
+  }
+
+  /* ---- Détail / traitement ---- */
+  function openDrawer(id){
+    var l=state.leads.filter(function(x){return x.id===id})[0]; if(!l)return;
+    var t=l.triage||{}, c=l.contact||{}, p=l.profile||{};
+    var name=[c.firstName,c.lastName].filter(Boolean).join(" ")||"—";
+    var tags=(t.tags||[]).map(function(x){return '<span class="tag">'+esc(x)+'</span>'}).join("")||'<span class="muted">—</span>';
+    $("#drawer-in").innerHTML=
+      '<div style="display:flex;align-items:start;gap:10px"><div style="flex:1">'+
+        '<h2>'+esc(name)+' <span class="badge '+prClass(t.priorityLabel)+'">'+esc(t.priorityLabel||"normale")+'</span></h2>'+
+        '<div class="muted" style="font-size:13px">'+(l.type==="quote"?"Demande d\'offre":"Message de contact")+' · '+fmtDate(l.receivedAt)+'</div>'+
+      '</div><button class="x" id="d-close">×</button></div>'+
+      '<div class="kv">'+
+        '<b>E-mail</b><span><a href="mailto:'+esc(c.email)+'">'+esc(c.email||"—")+'</a></span>'+
+        '<b>Téléphone</b><span>'+(c.phone?'<a href="tel:'+esc(c.phone)+'">'+esc(c.phone)+'</a>':"—")+'</span>'+
+        '<b>Domaine</b><span>'+esc(t.categoryLabel||"—")+'</span>'+
+        (l.insurances&&l.insurances.length?'<b>Assurances</b><span>'+esc(l.insurances.join(", "))+'</span>':"")+
+        (p.status?'<b>Statut</b><span>'+esc(p.status)+'</span>':"")+
+        (p.canton?'<b>Canton</b><span>'+esc(p.canton)+'</span>':"")+
+        (p.callback?'<b>Rappel</b><span>'+esc(p.callback)+'</span>':"")+
+        '<b>SLA</b><span>'+esc(t.sla||"—")+'</span>'+
+        '<b>Source</b><span class="muted">'+esc(l.source||"—")+'</span>'+
+      '</div>'+
+      (l.message?'<div class="sect">Message</div><pre class="reply">'+esc(l.message)+'</pre>':"")+
+      '<div class="sect">Tags</div><div>'+tags+'</div>'+
+      '<div class="sect">Réponse suggérée (Cronos)</div>'+
+      '<textarea id="d-reply" rows="8">'+esc(l.response||t.suggestedReply||"")+'</textarea>'+
+      '<div class="row-actions">'+
+        '<button class="btn sm" id="d-copy">Copier</button>'+
+        '<a class="btn sm ghost" id="d-mail" href="#">Ouvrir dans l\'e-mail</a>'+
+      '</div>'+
+      '<div class="sect">Notes internes</div>'+
+      '<textarea id="d-notes" rows="3" placeholder="Notes de suivi…">'+esc(l.notes||"")+'</textarea>'+
+      '<div class="sect">Statut</div>'+
+      '<select id="d-status">'+["new","in_progress","done","archived"].map(function(s){return '<option value="'+s+'"'+((l.status||"new")===s?" selected":"")+'>'+stLabel(s)+'</option>'}).join("")+'</select>'+
+      '<div class="row-actions" style="margin-top:14px">'+
+        '<button class="btn pri" id="d-save">Enregistrer</button>'+
+        '<button class="btn sm ghost" id="d-done">✓ Marquer traité</button>'+
+      '</div>'+
+      '<div class="err" id="d-err"></div>';
+
+    $("#overlay").classList.add("show"); $("#drawer").classList.add("show");
+    $("#d-close").addEventListener("click",closeDrawer);
+    $("#d-copy").addEventListener("click",function(){var v=$("#d-reply").value;navigator.clipboard&&navigator.clipboard.writeText(v);this.textContent="Copié ✓";var b=this;setTimeout(function(){b.textContent="Copier"},1200)});
+    var mail=$("#d-mail");
+    function refreshMail(){var subj=l.type==="quote"?"Votre demande d'offre — Fri-Consult":"Votre message — Fri-Consult";mail.href="mailto:"+encodeURIComponent(c.email||"")+"?subject="+encodeURIComponent(subj)+"&body="+encodeURIComponent($("#d-reply").value)}
+    refreshMail(); $("#d-reply").addEventListener("input",refreshMail);
+    $("#d-save").addEventListener("click",function(){save(id,false)});
+    $("#d-done").addEventListener("click",function(){save(id,true)});
+  }
+  function closeDrawer(){$("#overlay").classList.remove("show");$("#drawer").classList.remove("show")}
+  $("#overlay").addEventListener("click",closeDrawer);
+  document.addEventListener("keydown",function(e){if(e.key==="Escape")closeDrawer()});
+
+  function save(id,markDone){
+    var patch={
+      response:$("#d-reply").value,
+      notes:$("#d-notes").value,
+      status:markDone?"done":$("#d-status").value
+    };
+    var err=$("#d-err"); err.textContent="Enregistrement…";
+    api("/api/leads/"+id,{method:"PATCH",body:JSON.stringify(patch)})
+      .then(function(r){if(!r.ok)throw new Error("Échec ("+r.status+")");return r.json()})
+      .then(function(up){
+        var i=state.leads.findIndex(function(x){return x.id===id});
+        if(i>-1)state.leads[i]=up;
+        closeDrawer(); render(); load();
+      }).catch(function(e){err.textContent=e.message||String(e)});
+  }
+
+  /* ---- Reprise de session ---- */
+  var sb=SS.getItem("fc_base"), st=SS.getItem("fc_token");
+  if(sb) $("#g-base").value=sb;
+  if(sb&&st){ state.base=sb; state.token=st; tryLogin(sb,st).then(openApp).catch(function(){SS.removeItem("fc_token")}); }
+})();
+</script>
+</body>
+</html>
