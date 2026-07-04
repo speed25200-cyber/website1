@@ -248,6 +248,12 @@
           '<a class="nav-cta-mobile btn btn-block" href="demande-offre.html">Demander une offre ' + I.arrow + '</a>' +
         '</nav>' +
         '<div class="nav-cta">' +
+          '<label class="lang-wrap" title="Langue / Sprache / Language">' +
+            '<span class="lang-ico" aria-hidden="true">' + I.globe + '</span>' +
+            '<select class="lang-select" aria-label="Choisir la langue">' +
+              LANGS.map(function (l) { return '<option value="' + l + '">' + l.toUpperCase() + '</option>'; }).join("") +
+            '</select>' +
+          '</label>' +
           '<button class="theme-toggle" aria-label="Changer de thème clair/sombre" title="Thème clair / sombre">' +
             '<span class="sun">' + I.sun + '</span><span class="moon">' + I.moon + '</span></button>' +
           '<a class="btn nav-cta-desktop" href="demande-offre.html">Demander une offre ' + I.arrow + '</a>' +
@@ -370,6 +376,79 @@
       });
       if (btn) btn.addEventListener("click", function () { try { localStorage.setItem("fc-theme-user", "1"); } catch (e) {} });
     } catch (e) {}
+  }
+
+  /* ---------- Internationalisation (FR / DE / EN) ----------
+     Les traductions sont des données (content/i18n/<lang>.json = carte
+     FR → langue cible), éditables par Cronos / l'app iOS. On traduit les
+     nœuds texte rendus, en ignorant les zones dynamiques (compteurs,
+     calculateur, assistant). FR = identité. */
+  var LANGS = ["fr", "de", "en"];
+  var LANG_LABEL = { fr: "Français", de: "Deutsch", en: "English" };
+  var I18N_MAPS = { fr: {} };
+  var curLang = "fr";
+
+  function detectLang() {
+    try {
+      var saved = localStorage.getItem("fc-lang");
+      if (saved && LANGS.indexOf(saved) !== -1) return saved;
+    } catch (e) {}
+    var nav = (navigator.language || "fr").slice(0, 2).toLowerCase();
+    return LANGS.indexOf(nav) !== -1 ? nav : "fr";
+  }
+  function loadLangMap(lang) {
+    if (lang === "fr" || I18N_MAPS[lang]) return Promise.resolve();
+    if (location.protocol === "file:") { I18N_MAPS[lang] = {}; return Promise.resolve(); }
+    return loadJSON((window.CONTENT_BASE || "content/") + "i18n/" + lang + ".json")
+      .then(function (m) { I18N_MAPS[lang] = m || {}; });
+  }
+  function i18nTextNodes() {
+    var nodes = [];
+    if (!document.body) return nodes;
+    var walker = document.createTreeWalker(document.body, NodeFilter.SHOW_TEXT, {
+      acceptNode: function (n) {
+        if (!n.nodeValue || !n.nodeValue.trim()) return NodeFilter.FILTER_REJECT;
+        var p = n.parentNode;
+        while (p && p.nodeType === 1) {
+          var tag = p.nodeName;
+          if (tag === "SCRIPT" || tag === "STYLE" || tag === "NOSCRIPT") return NodeFilter.FILTER_REJECT;
+          if (p.hasAttribute("data-count") || p.hasAttribute("data-i18n-skip")) return NodeFilter.FILTER_REJECT;
+          p = p.parentNode;
+        }
+        return NodeFilter.FILTER_ACCEPT;
+      },
+    });
+    var n; while ((n = walker.nextNode())) nodes.push(n);
+    return nodes;
+  }
+  function applyLang(lang) {
+    curLang = lang;
+    document.documentElement.setAttribute("lang", lang);
+    try { localStorage.setItem("fc-lang", lang); } catch (e) {}
+    var map = I18N_MAPS[lang] || {};
+    i18nTextNodes().forEach(function (n) {
+      if (n.__fr == null) n.__fr = n.nodeValue;          // instantané FR canonique
+      var fr = n.__fr;
+      var key = fr.trim();
+      if (lang === "fr" || !map[key]) { n.nodeValue = fr; }
+      else { n.nodeValue = fr.replace(key, map[key]); }  // conserve les espaces autour
+    });
+    var sel = document.querySelector(".lang-select");
+    if (sel && sel.value !== lang) sel.value = lang;
+  }
+  function setLang(lang) {
+    if (LANGS.indexOf(lang) === -1) lang = "fr";
+    loadLangMap(lang).then(function () { applyLang(lang); });
+  }
+  function initI18n() {
+    curLang = detectLang();
+    var sel = document.querySelector(".lang-select");
+    if (sel) {
+      sel.value = curLang;
+      sel.addEventListener("change", function () { setLang(sel.value); });
+    }
+    // 1er passage : snapshot FR + application de la langue détectée
+    loadLangMap(curLang).then(function () { applyLang(curLang); });
   }
 
   /* ---------- UI de scroll : progression + retour haut ---------- */
@@ -587,6 +666,7 @@
     injectBreadcrumb();
     initSW();
     if (window.FC_FORMS && window.FC_FORMS.boot) window.FC_FORMS.boot();
+    initI18n();
   }
 
   document.addEventListener("DOMContentLoaded", function () {

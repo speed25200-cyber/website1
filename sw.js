@@ -3,7 +3,7 @@
    Stratégie : network-first pour les pages, stale-while-revalidate pour
    les ressources statiques. Repli hors-ligne dédié.
    ========================================================================= */
-var VERSION = "fc-v6";
+var VERSION = "fc-v7";
 var CORE = [
   "index.html",
   "assurances.html",
@@ -33,6 +33,8 @@ var CORE = [
   "content/posts.json",
   "content/testimonials.json",
   "content/faq.json",
+  "content/i18n/de.json",
+  "content/i18n/en.json",
 ];
 
 self.addEventListener("install", function (e) {

@@ -646,6 +646,18 @@ body.menu-open .nav-toggle span::after { top: 0; transform: rotate(-45deg); }
 /* =========================================================================
    Bascule de thème (bouton)
    ========================================================================= */
+/* Sélecteur de langue */
+.lang-wrap { display: inline-flex; align-items: center; gap: 3px; color: var(--ink-soft); }
+.lang-wrap .lang-ico { display: inline-flex; }
+.lang-wrap .lang-ico svg { width: 18px; height: 18px; }
+.lang-select {
+  appearance: none; -webkit-appearance: none; background: transparent; border: none;
+  font: inherit; font-weight: 600; font-size: .9rem; color: var(--ink-soft);
+  cursor: pointer; padding: 6px 4px; border-radius: 8px; transition: color .2s;
+}
+.lang-select:hover { color: var(--ink); }
+.lang-select option { color: #111; }
+
 .theme-toggle {
   width: 42px; height: 42px; border-radius: 50%;
   display: grid; place-items: center; color: var(--ink-soft);

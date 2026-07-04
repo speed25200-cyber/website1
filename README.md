@@ -12,6 +12,10 @@ Le site est **piloté par des fichiers JSON** dans [`content/`](content/) (servi
 
 Le site reste 100 % statique : rendu côté client à partir des JSON, avec repli sur des valeurs embarquées si le contenu est indisponible (jamais de page vide).
 
+**Multilingue FR / DE / EN** : les traductions sont aussi des données (`content/i18n/<lang>.json`) ; sélecteur de langue dans l'en-tête, détection automatique et mémorisation.
+
+**Backend de référence** (optionnel) : [`server/`](server/) — API Node sans dépendance (Docker inclus) pour recevoir/lister les leads (app iOS / CRM) et écrire le contenu sans Git. Voir [`server/README.md`](server/README.md).
+
 ## ✨ Fonctionnalités
 
 - **Mode sombre** complet : bascule dans l'en-tête, détection `prefers-color-scheme`, mémorisation, sans flash au chargement.

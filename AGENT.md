@@ -57,7 +57,16 @@ Cronos gère le site en modifiant les fichiers JSON puis en poussant sur le dép
 
 ---
 
-## 3. Demandes (leads) — pour l'app iOS / le CRM
+## 3. Multilingue (FR / DE / EN)
+
+Les traductions sont **aussi des données**, dans `content/i18n/<lang>.json` — une carte `{ "chaîne FR": "traduction" }`. `fr.json` est l'identité (vide). Le site traduit à la volée le texte affiché ; les chaînes absentes de la carte restent en FR (repli propre).
+
+- **Traduire / corriger** : éditer `content/i18n/de.json` ou `en.json`. La clé doit être la chaîne FR **exacte** telle qu'affichée.
+- **Ajouter une langue** (ex. `it`) : créer `content/i18n/it.json` + ajouter `"it"` au tableau `LANGS` dans `assets/js/main.js` (et à la liste `CORE` de `sw.js`).
+- Zones non traduites par design : noms propres, prix, noms d'assureurs, e-mail. Les régions dynamiques (`[data-i18n-skip]`, compteurs, calculateur, assistant) sont ignorées.
+- Couverture actuelle : **chrome (toutes pages) + page d'accueil** entièrement FR/DE/EN. Le corps des sous-pages/articles est en FR — extensible en ajoutant les chaînes correspondantes dans les cartes i18n.
+
+## 4. Demandes (leads) — pour l'app iOS / le CRM
 
 Les formulaires (demande d'offre, contact) émettent un **objet JSON structuré** conforme à [`content/schema/lead.schema.json`](content/schema/lead.schema.json), contrat `fri-consult/lead@1`.
 
@@ -86,7 +95,7 @@ L'app iOS peut : (a) **lire le contenu** directement depuis `https://<domaine>/c
 
 ---
 
-## 4. Validation (à faire avant chaque push)
+## 5. Validation (à faire avant chaque push)
 
 Le contenu invalide n'affiche rien pour la section concernée (le site ne plante pas, mais la donnée est perdue). **Valide toujours** contre le schéma avant de committer. Exemple avec `ajv` :
 
@@ -102,16 +111,17 @@ Règles d'or : JSON strictement valide (guillemets doubles, pas de virgule final
 
 ---
 
-## 5. Contrat d'API (pour un backend futur)
+## 6. API REST (backend de référence)
 
-Aujourd'hui : lecture = fichiers statiques `GET /content/*.json` ; écriture = Git. Pour une future API REST gérée par Cronos/l'app, conserver ces formes (mêmes schémas) :
+Un backend prêt à déployer est fourni dans [`server/`](server/) (Node sans dépendance, Docker inclus — voir [`server/README.md`](server/README.md)). Il permet à Cronos d'écrire le contenu **sans Git** et à l'app iOS de lire les leads.
 
-| Méthode | Chemin | Rôle |
-|---|---|---|
-| `GET` | `/content/manifest.json` | découverte |
-| `GET` | `/content/{collection}.json` | lire une collection |
-| `PUT` | `/content/{collection}.json` | remplacer (valider via schéma) |
-| `POST` | `/leads` | créer un lead (`lead@1`) |
-| `GET` | `/leads` | lister les leads (backend requis) |
+| Méthode | Chemin | Auth | Rôle |
+|---|---|---|---|
+| `GET` | `/api/manifest` | – | découverte |
+| `GET` | `/api/content/<collection>` | – | lire une collection |
+| `PUT` | `/api/content/<collection>` | 🔒 | écrire (validée par schéma) |
+| `POST` | `/api/leads` | – | créer un lead (`lead@1`) — cible du `leadWebhook` |
+| `GET` | `/api/leads` | 🔒 | lister les leads (app / CRM) |
+| `GET`/`PATCH` | `/api/leads/<id>` | 🔒 | consulter / mettre à jour un lead |
 
-Tant qu'aucun backend n'est déployé, l'écriture passe par Git et les leads par e-mail/webhook.
+🔒 = `Authorization: Bearer <FC_API_TOKEN>`. Sans backend déployé, l'écriture passe par Git et les leads par e-mail/webhook — les deux voies partagent les **mêmes schémas**.

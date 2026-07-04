@@ -43,6 +43,14 @@
       "idField": "id",
       "renderedOn": ["index.html"],
       "description": "Questions fréquentes (alimente aussi le JSON-LD FAQPage)."
+    },
+    "i18n": {
+      "kind": "map",
+      "path": "i18n/{lang}.json",
+      "languages": ["fr", "de", "en"],
+      "format": "Carte { chaîne_FR: traduction }. fr.json = identité (vide).",
+      "renderedOn": ["tout le site (chrome) + accueil"],
+      "description": "Traductions. Ajouter une langue = ajouter i18n/<lang>.json et l'entrée dans LANGS (assets/js/main.js)."
     }
   },
   "leads": {
