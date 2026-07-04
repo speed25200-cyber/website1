@@ -96,6 +96,7 @@
   var NAV_ITEMS = [
     { href: "index.html", label: "Accueil" },
     { href: "assurances.html", label: "Nos assurances" },
+    { href: "calculateur.html", label: "Calculateur" },
     { href: "a-propos.html", label: "À propos" },
     { href: "contact.html", label: "Contact" },
   ];
@@ -163,6 +164,7 @@
           '<div><h4>Assurances</h4><ul>' + svcLinks + '<li><a href="assurances.html">Voir tout</a></li></ul></div>' +
           '<div><h4>Société</h4><ul>' +
             '<li><a href="a-propos.html">À propos</a></li>' +
+            '<li><a href="calculateur.html">Calculateur d\'économies</a></li>' +
             '<li><a href="demande-offre.html">Demander une offre</a></li>' +
             '<li><a href="contact.html">Contact</a></li>' +
             '<li><a href="mentions-legales.html">Mentions légales</a></li>' +

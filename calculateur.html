@@ -1,0 +1,85 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Calculateur d'économies d'assurance — Fri-Consult</title>
+<meta name="description" content="Estimez en quelques secondes combien vous pourriez économiser sur vos assurances en Suisse (maladie, véhicule, ménage, protection juridique). Estimation gratuite et indicative par Fri-Consult.">
+<meta name="theme-color" content="#ffffff">
+<link rel="canonical" href="https://www.fri-consult.ch/calculateur.html">
+<meta property="og:title" content="Calculateur d'économies — Fri-Consult">
+<meta property="og:description" content="Combien pouvez-vous économiser sur vos assurances ? Estimez-le en 30 secondes.">
+<link rel="icon" href="assets/img/favicon.svg" type="image/svg+xml">
+<link rel="manifest" href="site.webmanifest">
+<script>(function(){try{var t=localStorage.getItem("fc-theme")||(matchMedia("(prefers-color-scheme: dark)").matches?"dark":"light");document.documentElement.setAttribute("data-theme",t);}catch(e){}})();</script>
+<link rel="stylesheet" href="assets/css/styles.css">
+</head>
+<body>
+<a class="skip-link" href="#main">Aller au contenu</a>
+<header id="site-header"></header>
+
+<main id="main">
+  <section class="page-hero" style="padding-bottom:clamp(16px,3vw,28px)">
+    <div class="hero-bg"></div>
+    <div class="container">
+      <nav class="breadcrumb" data-reveal><a href="index.html">Accueil</a><span>›</span><span>Calculateur</span></nav>
+      <h1 class="display" data-reveal data-reveal-delay="1">Combien pouvez-vous<br>économiser ?</h1>
+      <p class="lead" data-reveal data-reveal-delay="2">Ajustez vos primes actuelles et découvrez votre potentiel d'économies annuelles. Estimation indicative, gratuite et sans engagement — l'offre exacte est établie après analyse.</p>
+    </div>
+  </section>
+
+  <section class="section" style="padding-top:clamp(12px,3vw,24px)">
+    <div class="container">
+      <div class="calc-wrap" id="calc-app">
+        <!-- Contrôles -->
+        <div class="form-card" data-reveal>
+          <div class="step-label">Vos assurances & primes actuelles</div>
+          <h3 class="h3" style="margin:2px 0 20px">Personnalisez votre estimation</h3>
+          <div id="calc-controls"></div>
+          <p class="calc-disclaimer">Les taux d'optimisation appliqués reflètent des ordres de grandeur observés sur le marché suisse. Ils ne constituent ni une garantie, ni une offre. Seule une analyse individuelle fournit un chiffre exact.</p>
+        </div>
+
+        <!-- Résultat -->
+        <aside class="calc-result" data-reveal data-reveal-delay="1">
+          <div class="result-card">
+            <span class="badge teal" style="margin-bottom:14px">Économie estimée</span>
+            <div class="result-total"><span id="calc-total" data-cur="0">0</span> <small>CHF / an</small></div>
+            <div class="result-range" id="calc-range"></div>
+            <div class="result-bars" id="calc-bars"></div>
+            <p id="calc-empty" class="text-muted" style="display:none;font-size:.95rem">Sélectionnez au moins une assurance pour lancer l'estimation.</p>
+            <a class="btn btn-block btn-lg" id="calc-cta" href="demande-offre.html" style="margin-top:22px">Obtenir mon offre exacte</a>
+            <p class="text-muted center" style="font-size:.82rem;margin-top:12px">Gratuit · sans engagement · réponse rapide</p>
+          </div>
+        </aside>
+      </div>
+    </div>
+  </section>
+
+  <section class="section section-tint">
+    <div class="container">
+      <div class="section-head center">
+        <span class="eyebrow" data-reveal>Bon à savoir</span>
+        <h2 class="h2" data-reveal data-reveal-delay="1">D'où viennent ces économies ?</h2>
+      </div>
+      <div class="grid cols-3">
+        <div class="card" data-reveal><span class="ico" id="k1"></span><h3>Le bon modèle</h3><p>Franchise optimale, modèle Telmed / médecin de famille / HMO : le même niveau de soins peut coûter bien moins cher.</p></div>
+        <div class="card" data-reveal data-reveal-delay="1"><span class="ico teal" id="k2"></span><h3>La bonne compagnie</h3><p>À couverture égale, les primes varient fortement d'un assureur à l'autre. Nous mettons plus de 30 acteurs en concurrence.</p></div>
+        <div class="card" data-reveal data-reveal-delay="2"><span class="ico" id="k3"></span><h3>Zéro doublon</h3><p>Nous éliminons les garanties redondantes et adaptons les couvertures à votre situation réelle.</p></div>
+      </div>
+    </div>
+  </section>
+</main>
+
+<footer id="site-footer"></footer>
+<script src="assets/js/config.js"></script>
+<script src="assets/js/main.js"></script>
+<script src="assets/js/calc.js"></script>
+<script>
+  document.addEventListener("DOMContentLoaded", function () {
+    var I = window.ICONS;
+    var set = function (id, n) { var el = document.getElementById(id); if (el) el.innerHTML = I[n]; };
+    set("k1","spark"); set("k2","scale"); set("k3","doc");
+  });
+</script>
+</body>
+</html>
