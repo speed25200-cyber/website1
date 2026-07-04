@@ -240,7 +240,7 @@ body.menu-open .nav-toggle span { background: transparent; }
 body.menu-open .nav-toggle span::before { top: 0; transform: rotate(45deg); }
 body.menu-open .nav-toggle span::after { top: 0; transform: rotate(-45deg); }
 
-@media (max-width: 900px) {
+@media (max-width: 1024px) {
   .nav-toggle { display: inline-flex; }
   .nav-cta-desktop { display: none; }
   .nav-cta-mobile { display: inline-flex; margin-top: 14px; }
@@ -530,6 +530,35 @@ body.menu-open .nav-toggle span::after { top: 0; transform: rotate(-45deg); }
 .page-hero .lead { margin-top: 18px; max-width: 60ch; }
 .breadcrumb { display: flex; gap: 8px; align-items: center; font-size: .88rem; color: var(--muted); }
 .breadcrumb a:hover { color: var(--brand-600); }
+
+/* ---------- Cartes articles / Conseils ---------- */
+.post-card { display: flex; flex-direction: column; background: var(--surface); border: 1px solid var(--line); border-radius: var(--r-lg); padding: clamp(22px, 2.6vw, 30px); box-shadow: var(--shadow-1); height: 100%; transition: transform .35s var(--ease), box-shadow .35s var(--ease), border-color .3s; }
+.post-card:hover { transform: translateY(-6px); box-shadow: var(--shadow-2); border-color: transparent; }
+.post-top { display: flex; align-items: center; gap: 12px; margin-bottom: 16px; }
+.post-ic { width: 46px; height: 46px; border-radius: 13px; background: var(--brand-050); color: var(--brand-600); display: grid; place-items: center; flex: none; }
+.post-ic svg { width: 22px; height: 22px; }
+.post-meta b { display: block; font-size: .82rem; color: var(--brand-700); font-weight: 600; }
+.post-meta span { font-size: .8rem; color: var(--muted); }
+.post-card h3 { font-size: 1.2rem; line-height: 1.25; margin-bottom: 10px; }
+.post-card p { color: var(--ink-soft); font-size: .96rem; flex: 1; }
+.post-card .link-arrow { margin-top: 18px; }
+
+/* ---------- Article ---------- */
+.article-hero { padding-top: calc(var(--nav-h) + clamp(36px, 6vw, 64px)); padding-bottom: clamp(20px, 3vw, 32px); }
+.article-hero .container { max-width: 800px; }
+.article-tag { display: inline-flex; gap: 10px; align-items: center; color: var(--brand-700); font-weight: 600; font-size: .9rem; margin-bottom: 14px; }
+.article-tag .dot { width: 5px; height: 5px; border-radius: 50%; background: var(--muted); }
+.article-tag span.time { color: var(--muted); font-weight: 500; }
+.article-body { max-width: 720px; margin-inline: auto; }
+.article-body .lead { margin-bottom: 8px; }
+.article-cta { margin-top: 40px; border-radius: var(--r-xl); padding: clamp(26px, 4vw, 40px); color: #fff; background: radial-gradient(80% 120% at 15% 0%, rgba(23,182,167,.5), transparent 55%), radial-gradient(70% 120% at 100% 100%, rgba(47,116,255,.55), transparent 55%), linear-gradient(120deg, #0a3ea8, #0a1020); box-shadow: var(--shadow-2); text-align: center; }
+.article-cta h3 { color: #fff; font-size: 1.4rem; }
+.article-cta p { color: rgba(255,255,255,.82); margin: 10px auto 20px; max-width: 52ch; }
+.article-cta .btn { background: #fff; color: var(--brand-700); }
+.article-nav { display: flex; justify-content: space-between; gap: 16px; margin-top: 40px; padding-top: 24px; border-top: 1px solid var(--line); font-size: .95rem; }
+.callout { display: flex; gap: 14px; align-items: flex-start; padding: 18px 20px; border-radius: var(--r); background: var(--brand-050); border: 1px solid transparent; margin: 22px 0; }
+.callout svg { width: 22px; height: 22px; color: var(--brand-600); flex: none; margin-top: 2px; }
+.callout p { margin: 0; color: var(--ink-soft); font-size: .95rem; }
 
 /* ---------- Prose (mentions légales) ---------- */
 .prose { max-width: 760px; }

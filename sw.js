@@ -3,11 +3,16 @@
    Stratégie : network-first pour les pages, stale-while-revalidate pour
    les ressources statiques. Repli hors-ligne dédié.
    ========================================================================= */
-var VERSION = "fc-v3";
+var VERSION = "fc-v4";
 var CORE = [
   "index.html",
   "assurances.html",
   "calculateur.html",
+  "conseils.html",
+  "conseil-lamal.html",
+  "conseil-3e-pilier.html",
+  "conseil-resiliation.html",
+  "conseil-menage-rc.html",
   "a-propos.html",
   "demande-offre.html",
   "contact.html",

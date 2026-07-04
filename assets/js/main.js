@@ -92,11 +92,49 @@
       points: ["Plans d'épargne", "Fonds & placements", "Optimisation fiscale", "Conseil patrimonial global"] },
   ];
 
+  /* ---------- Articles / Conseils (source unique) ---------- */
+  window.POSTS = [
+    { id: "conseil-lamal", icon: "heart", cat: "Assurance maladie", mins: 6,
+      title: "LAMal : 6 leviers pour réduire votre prime sans perdre en couverture",
+      excerpt: "Franchise, modèle d'assurance, caisse : quelques ajustements bien pensés peuvent alléger votre prime de plusieurs centaines de francs par an." },
+    { id: "conseil-3e-pilier", icon: "piggy", cat: "Prévoyance", mins: 7,
+      title: "3e pilier : épargner pour la retraite tout en réduisant ses impôts",
+      excerpt: "Le pilier 3a est l'un des outils les plus efficaces en Suisse pour préparer sa retraite et diminuer sa charge fiscale. Mode d'emploi." },
+    { id: "conseil-resiliation", icon: "doc", cat: "Pratique", mins: 5,
+      title: "Changer d'assurance en Suisse : délais et calendrier de résiliation",
+      excerpt: "Assurance de base, complémentaires, RC, véhicule : chaque contrat a ses règles. Le calendrier à connaître pour ne pas rater le coche." },
+    { id: "conseil-menage-rc", icon: "home", cat: "Ménage & RC", mins: 5,
+      title: "RC privée et assurance ménage : ce qui est vraiment couvert",
+      excerpt: "Dégât des eaux, casse, vol, dommages causés à autrui : on démêle ce que couvrent — ou non — ces deux assurances essentielles du quotidien." },
+  ];
+
+  function renderPosts() {
+    var render = function (list) {
+      return list.map(function (p, i) {
+        return '<a class="post-card" href="' + p.id + '.html" data-reveal data-reveal-delay="' + ((i % 3) + 1) + '">' +
+          '<div class="post-top"><span class="post-ic">' + (I[p.icon] || I.doc) + '</span>' +
+            '<span class="post-meta"><b>' + p.cat + '</b><span>' + p.mins + ' min de lecture</span></span></div>' +
+          '<h3>' + p.title + '</h3>' +
+          '<p>' + p.excerpt + '</p>' +
+          '<span class="link-arrow">Lire l\'article ' + I.arrow + '</span>' +
+        '</a>';
+      }).join("");
+    };
+    var teaser = document.getElementById("posts-grid");
+    if (teaser) {
+      var lim = parseInt(teaser.getAttribute("data-limit") || "3", 10);
+      teaser.innerHTML = render(window.POSTS.slice(0, lim));
+    }
+    var full = document.getElementById("blog-grid");
+    if (full) full.innerHTML = render(window.POSTS);
+  }
+
   /* ---------- Navigation partagée ---------- */
   var NAV_ITEMS = [
     { href: "index.html", label: "Accueil" },
     { href: "assurances.html", label: "Nos assurances" },
     { href: "calculateur.html", label: "Calculateur" },
+    { href: "conseils.html", label: "Conseils" },
     { href: "a-propos.html", label: "À propos" },
     { href: "contact.html", label: "Contact" },
   ];
@@ -165,6 +203,7 @@
           '<div><h4>Société</h4><ul>' +
             '<li><a href="a-propos.html">À propos</a></li>' +
             '<li><a href="calculateur.html">Calculateur d\'économies</a></li>' +
+            '<li><a href="conseils.html">Conseils & guides</a></li>' +
             '<li><a href="demande-offre.html">Demander une offre</a></li>' +
             '<li><a href="contact.html">Contact</a></li>' +
             '<li><a href="mentions-legales.html">Mentions légales</a></li>' +
@@ -424,6 +463,7 @@
     buildHeader();
     buildFooter();
     renderServices();
+    renderPosts();
     fillConfig();
     initTheme();
     initScrollUI();
