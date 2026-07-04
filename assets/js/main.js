@@ -388,6 +388,37 @@
     });
   }
 
+  /* ---------- Données structurées : fil d'Ariane ---------- */
+  function injectBreadcrumb() {
+    var bc = document.querySelector(".breadcrumb");
+    if (!bc) return;
+    var origin = location.href.replace(/[^/]*$/, "");
+    var items = [];
+    var pos = 1;
+    bc.querySelectorAll("a, span").forEach(function (el) {
+      var name = el.textContent.trim();
+      if (!name || name === "›" || name === "/") return;
+      var item = { "@type": "ListItem", position: pos++, name: name };
+      if (el.tagName === "A" && el.getAttribute("href")) item.item = origin + el.getAttribute("href");
+      items.push(item);
+    });
+    if (items.length < 2) return;
+    var data = { "@context": "https://schema.org", "@type": "BreadcrumbList", itemListElement: items };
+    var s = document.createElement("script");
+    s.type = "application/ld+json";
+    s.textContent = JSON.stringify(data);
+    document.head.appendChild(s);
+  }
+
+  /* ---------- Service Worker (PWA hors-ligne) ---------- */
+  function initSW() {
+    if (!("serviceWorker" in navigator)) return;
+    if (location.protocol === "file:") return;
+    window.addEventListener("load", function () {
+      navigator.serviceWorker.register("sw.js").catch(function () {});
+    });
+  }
+
   /* ---------- Init ---------- */
   document.addEventListener("DOMContentLoaded", function () {
     buildHeader();
@@ -401,5 +432,7 @@
     initReveal();
     initCounters();
     initFaq();
+    injectBreadcrumb();
+    initSW();
   });
 })();
