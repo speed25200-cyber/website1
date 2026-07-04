@@ -111,8 +111,8 @@
   <section class="section" style="padding-block:clamp(30px,5vw,54px)">
     <div class="container">
       <p class="center text-muted" style="font-size:.9rem;margin-bottom:26px;font-weight:600;letter-spacing:.04em;text-transform:uppercase" data-reveal>Nous comparons les principaux assureurs de Suisse</p>
-      <div class="logos" data-reveal data-reveal-delay="1">
-        <span>Helvetia</span><span>AXA</span><span>Zurich</span><span>Groupe Mutuel</span><span>Assura</span><span>Swica</span><span>Generali</span><span>Vaudoise</span>
+      <div class="marquee" data-reveal data-reveal-delay="1" aria-label="Assureurs comparés">
+        <div class="marquee-track" id="assurers-track"></div>
       </div>
     </div>
   </section>
@@ -309,6 +309,10 @@
   document.addEventListener("DOMContentLoaded", function () {
     var I = window.ICONS;
     var set = function (id, name) { var el = document.getElementById(id); if (el) el.innerHTML = I[name]; };
+    // Bandeau assureurs (dupliqué pour une boucle fluide)
+    var assurers = ["Helvetia","AXA","Zurich","Groupe Mutuel","Assura","Swica","Generali","Vaudoise","CSS","Sanitas","Mobilière","Baloise"];
+    var track = document.getElementById("assurers-track");
+    if (track) { var one = assurers.map(function (a) { return "<span>" + a + "</span>"; }).join(""); track.innerHTML = one + one; }
     set("hc-i1", "heart"); set("hc-i2", "car"); set("hc-i3", "home");
     set("w-i1", "scale"); set("w-i2", "handshake"); set("w-i3", "spark");
     set("w-i4", "users"); set("w-i5", "pin"); set("w-i6", "lock");

@@ -314,6 +314,17 @@ body.menu-open .nav-toggle span::after { top: 0; transform: rotate(-45deg); }
 .logos { display: flex; flex-wrap: wrap; align-items: center; justify-content: center; gap: clamp(20px, 4vw, 54px); opacity: .78; }
 .logos span { font-weight: 700; letter-spacing: -0.02em; color: var(--muted); font-size: clamp(1rem, 2vw, 1.35rem); }
 
+/* Marquee (bandeau assureurs) */
+.marquee { position: relative; overflow: hidden; -webkit-mask-image: linear-gradient(90deg, transparent, #000 12%, #000 88%, transparent); mask-image: linear-gradient(90deg, transparent, #000 12%, #000 88%, transparent); }
+.marquee-track { display: flex; width: max-content; gap: clamp(28px, 5vw, 64px); align-items: center; animation: marquee 34s linear infinite; }
+.marquee:hover .marquee-track { animation-play-state: paused; }
+.marquee-track span { font-weight: 700; letter-spacing: -0.02em; color: var(--muted); font-size: clamp(1.05rem, 2vw, 1.4rem); opacity: .72; white-space: nowrap; }
+@keyframes marquee { from { transform: translateX(0); } to { transform: translateX(-50%); } }
+@media (prefers-reduced-motion: reduce) {
+  .marquee { -webkit-mask-image: none; mask-image: none; }
+  .marquee-track { animation: none; flex-wrap: wrap; justify-content: center; width: 100%; }
+}
+
 /* ---------- Cartes ---------- */
 .card {
   background: var(--surface); border: 1px solid var(--line);

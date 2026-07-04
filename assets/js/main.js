@@ -352,6 +352,27 @@
     bar.querySelector("#ck-no").addEventListener("click", close);
   }
 
+  /* ---------- Parallaxe discrète de la carte héro ---------- */
+  function initParallax() {
+    var card = document.querySelector(".hero-card");
+    if (!card) return;
+    if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) return;
+    if (window.matchMedia("(hover: none)").matches) return; // pas sur tactile
+    var hero = card.closest(".hero") || document;
+    var raf = null, tx = 0, ty = 0;
+    hero.addEventListener("mousemove", function (e) {
+      var r = hero.getBoundingClientRect();
+      var px = (e.clientX - r.left) / r.width - 0.5;
+      var py = (e.clientY - r.top) / r.height - 0.5;
+      tx = px * 10; ty = py * 10;
+      if (!raf) raf = requestAnimationFrame(function () {
+        card.style.transform = "translate3d(" + tx.toFixed(2) + "px," + ty.toFixed(2) + "px,0)";
+        raf = null;
+      });
+    });
+    hero.addEventListener("mouseleave", function () { card.style.transform = ""; });
+  }
+
   /* ---------- Reveal au scroll ---------- */
   function initReveal() {
     var els = document.querySelectorAll("[data-reveal]");
@@ -472,6 +493,7 @@
     initReveal();
     initCounters();
     initFaq();
+    initParallax();
     injectBreadcrumb();
     initSW();
   });
