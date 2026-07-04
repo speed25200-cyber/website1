@@ -597,6 +597,17 @@ body.menu-open .nav-toggle span::after { top: 0; transform: rotate(-45deg); }
 /* Icône check en masque (pour puces) */
 :root { --check: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='3' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M20 6 9 17l-5-5'/%3E%3C/svg%3E"); }
 
+/* ---------- Impression ---------- */
+@media print {
+  .nav, #site-footer, .to-top, .fab-contact, .cookie-bar, .scroll-progress,
+  .theme-toggle, .hero-bg, .article-cta, .article-nav, .cta-band, .skip-link { display: none !important; }
+  body { color: #000; background: #fff; font-size: 12pt; }
+  .section, .article-hero, .page-hero { padding: 12px 0 !important; }
+  a { color: #000; text-decoration: underline; }
+  .container { max-width: 100%; }
+  .card, .post-card, .form-card { box-shadow: none; border: 1px solid #ccc; break-inside: avoid; }
+}
+
 /* =========================================================================
    Overrides thème sombre pour les dégradés « clairs par construction »
    ========================================================================= */
