@@ -138,14 +138,34 @@ Toutes les demandes du site (offre + contact) convergent vers **une seule file**
 
 **Statuts d'un lead** : `new` → `in_progress` → `done` (ou `archived`). `resolvedAt` est horodaté automatiquement au passage en `done`.
 
-**Boucle recommandée pour Cronos :**
+### Protocole d'autonomie (contrat `fri-consult/agent-queue@1`)
 
-1. **Relever** les nouvelles demandes : `GET /api/leads?status=new` (ou lire `server/data/leads.json`). Trier par `triage.priority` décroissante ; traiter d'abord `triage.urgent` / `triage.complaint`.
-2. **Rédiger** la réponse conseil : partir de `triage.suggestedReply` (simple accusé de réception) et la **remplacer** par une vraie réponse — comparaison d'offres, conseil adapté au `profile` (canton, statut) et aux `insurances` demandées, dans la langue `triage.lang`. Fri-Consult est courtier indépendant : **ne jamais inventer de prix ni de garanties**, proposer un rappel/rendez-vous pour chiffrer.
-3. **Enregistrer** le traitement : `PATCH /api/leads/<id>` avec `{ "response": "…", "status": "in_progress" }` (puis `"done"` une fois envoyé). Ajouter des `notes` internes si utile.
-4. **Envoyer** la réponse au client (e-mail, via le canal choisi) et **clôturer** : `PATCH … { "status": "done" }`.
-5. Facultatif : si la demande révèle un manque de contenu (FAQ, service), Cronos met aussi à jour le contenu via §2 (Git) ou §6 (`PUT /api/content/...`).
+| Étape | Appel | Rôle |
+|---|---|---|
+| 1. Découvrir | `GET /api/queue?limit=N` 🔒 | le travail **actionnable**, trié par priorité puis ancienneté (exclut le clôturé et le déjà-réclamé) |
+| 2. Réclamer | `POST /api/leads/<id>/claim` 🔒 `{agent, ttlSeconds}` | **verrou de traitement** (bail). `409` si un autre agent le détient ; un bail expiré est re-réclamable (reprise auto si un agent meurt) |
+| 3. Répondre | `PATCH /api/leads/<id>` 🔒 `{actor, response, status:"done", notes}` | enregistre la réponse, clôture (`resolvedAt` auto, bail libéré) |
+| 4. Auditer | `lead.history[]` | chaque transition (received, triaged, claim, update) est journalisée automatiquement |
 
-La **console `/admin`** offre la même boucle en interface web (file triée, brouillon éditable, changement de statut, ouverture e-mail) pour un conseiller humain — Cronos et l'humain partagent le même store.
+**Worker prêt à l'emploi** — [`server/cronos-worker.js`](server/cronos-worker.js) implémente toute la boucle pour les **agents LLM locaux** (endpoint compatible OpenAI : Ollama, LM Studio, llama.cpp-server) :
 
-> Repli garanti : le pré-tri et les accusés de réception sont **déterministes** (aucune clé IA requise). Le site reste 100 % fonctionnel même sans Cronos actif ; Cronos ajoute la qualité de réponse et le conseil par-dessus.
+```bash
+# Boucle 100 % autonome : file → claim → LLM local → garde-fous → réponse → done
+FC_API_TOKEN=xxx CRONOS_LLM_URL=http://localhost:11434/v1 CRONOS_LLM_MODEL=llama3.1 \
+  node server/cronos-worker.js run
+
+# Ou piloté commande par commande par Cronos Code (sortie JSON machine) :
+node server/cronos-worker.js queue          # que faut-il traiter ?
+node server/cronos-worker.js next           # réclame la plus prioritaire
+node server/cronos-worker.js complete <id> --response-file rep.txt
+```
+
+**Règles de rédaction** (appliquées par le prompt du worker + garde-fous automatiques) : répondre dans la langue `triage.lang` ; Fri-Consult est courtier **indépendant** — ne **jamais** inventer de prix, primes ni garanties chiffrées (garde-fou : toute réponse contenant un montant CHF est rejetée) ; proposer un rappel/rendez-vous pour chiffrer ; réclamation → excuses + contact direct rapide ; signer « Votre équipe Fri-Consult ».
+
+**Dégradé, jamais bloqué** : si le LLM local est indisponible ou que sa sortie échoue aux garde-fous, le worker envoie le brouillon déterministe du triage (`triage.suggestedReply`) et le note dans `notes` + `history`. La file ne s'accumule jamais.
+
+Facultatif : si une demande révèle un manque de contenu (FAQ, service), Cronos met aussi à jour le contenu via §2 (Git) ou §6 (`PUT /api/content/...`).
+
+La **console `/admin`** offre la même boucle en interface web (file triée, brouillon éditable, statuts) pour supervision humaine — Cronos et l'humain partagent le même store, l'audit `history[]` montre qui a fait quoi.
+
+> Repli garanti : le pré-tri et les accusés de réception sont **déterministes** (aucun LLM requis). Le site reste 100 % fonctionnel même sans Cronos actif ; Cronos apporte la vraie réponse conseil par-dessus.

@@ -14,7 +14,10 @@
      POST   /api/leads                         (public) crée un lead (lead@1)
      GET    /api/leads                          (auth) liste les leads
      GET    /api/leads/<id>                     (auth)
-     PATCH  /api/leads/<id>                     (auth) maj statut/notes
+     PATCH  /api/leads/<id>                     (auth) maj statut/notes/réponse
+     GET    /api/queue                          (auth) travail actionnable (trié)
+     POST   /api/leads/<id>/claim               (auth) verrou de traitement (bail)
+     GET    /api/stats                          (auth) agrégats de la file
      (tout le reste) → fichiers statiques du site
 
    Variables d'environnement
@@ -104,6 +107,22 @@ function readBody(req) {
 /* ---- Stockage des leads ---- */
 var writeQueue = Promise.resolve();
 function readLeads() { try { return JSON.parse(fs.readFileSync(LEADS_FILE, "utf8")); } catch (e) { return []; } }
+// Journal d'audit embarqué dans le lead : chaque transition est tracée pour
+// que le traitement autonome (Cronos) reste vérifiable a posteriori.
+function addHistory(lead, event, detail) {
+  lead.history = lead.history || [];
+  lead.history.push({ at: new Date().toISOString(), event: event, detail: detail || undefined });
+}
+function leaseActive(lead) {
+  return !!(lead.lease && lead.lease.until && Date.parse(lead.lease.until) > Date.now());
+}
+// Une demande est « actionnable » si personne ne la traite : ni clôturée, ni
+// sous bail actif d'un agent.
+function isActionable(lead) {
+  var s = lead.status || "new";
+  if (s === "done" || s === "resolved" || s === "archived") return false;
+  return !leaseActive(lead);
+}
 function appendLead(lead) {
   writeQueue = writeQueue.then(function () {
     var all = readLeads();
@@ -112,20 +131,52 @@ function appendLead(lead) {
   });
   return writeQueue.then(function () { return lead; });
 }
-function updateLead(id, patch) {
+function updateLead(id, patch, actor) {
   var updated = null;
   writeQueue = writeQueue.then(function () {
     var all = readLeads();
     var i = all.findIndex(function (l) { return l.id === id; });
     if (i === -1) return;
     // Champs que Cronos Code (ou un conseiller) peut mettre à jour en traitant.
-    ["status", "notes", "assignee", "response", "triage"].forEach(function (k) { if (patch[k] !== undefined) all[i][k] = patch[k]; });
+    var changed = [];
+    ["status", "notes", "assignee", "response", "triage"].forEach(function (k) {
+      if (patch[k] !== undefined) { all[i][k] = patch[k]; changed.push(k); }
+    });
     all[i].updatedAt = new Date().toISOString();
-    if (patch.status === "done" || patch.status === "resolved") all[i].resolvedAt = all[i].resolvedAt || new Date().toISOString();
+    if (patch.status === "done" || patch.status === "resolved") {
+      all[i].resolvedAt = all[i].resolvedAt || new Date().toISOString();
+      all[i].lease = undefined; // libère le bail à la clôture
+    }
+    if (changed.length) addHistory(all[i], "update", (actor ? actor + " : " : "") + changed.join(", ") + (patch.status ? " → " + patch.status : ""));
     updated = all[i];
     fs.writeFileSync(LEADS_FILE, JSON.stringify(all, null, 2));
   });
   return writeQueue.then(function () { return updated; });
+}
+// Verrou de traitement : un agent « réclame » une demande pour une durée
+// limitée (bail). Atomique via la writeQueue → deux agents ne peuvent pas
+// traiter la même demande en parallèle ; un bail expiré est re-réclamable
+// (reprise automatique si un agent meurt en cours de traitement).
+function claimLead(id, agent, ttlSeconds) {
+  var result = null;
+  writeQueue = writeQueue.then(function () {
+    var all = readLeads();
+    var i = all.findIndex(function (l) { return l.id === id; });
+    if (i === -1) { result = { code: 404 }; return; }
+    var l = all[i];
+    var s = l.status || "new";
+    if (s === "done" || s === "resolved" || s === "archived") { result = { code: 409, error: "déjà clôturé" }; return; }
+    if (leaseActive(l) && l.lease.agent !== agent) { result = { code: 409, error: "déjà réclamé par " + l.lease.agent, lease: l.lease }; return; }
+    var ttl = Math.max(30, Math.min(3600, parseInt(ttlSeconds, 10) || 300));
+    l.lease = { agent: agent, until: new Date(Date.now() + ttl * 1000).toISOString() };
+    l.status = "in_progress";
+    l.assignee = agent;
+    l.updatedAt = new Date().toISOString();
+    addHistory(l, "claim", agent + " (bail " + ttl + " s)");
+    fs.writeFileSync(LEADS_FILE, JSON.stringify(all, null, 2));
+    result = { code: 200, lead: l };
+  });
+  return writeQueue.then(function () { return result; });
 }
 
 /* ---- Fichiers statiques ---- */
@@ -193,6 +244,8 @@ var server = http.createServer(async function (req, res) {
       // Cronos Code lit cette file : on pré-trie chaque demande (déterministe,
       // sans IA) pour lui livrer catégorie/priorité/tags/brouillon prêts.
       try { lead.triage = intake.triage(lead); } catch (e) { lead.triage = { error: String(e.message || e) }; }
+      addHistory(lead, "received", lead.source);
+      if (lead.triage && lead.triage.priorityLabel) addHistory(lead, "triaged", lead.triage.category + " · priorité " + lead.triage.priorityLabel);
       await appendLead(lead);
       return json(res, 201, { id: lead.id, status: lead.status, triage: lead.triage });
     }
@@ -207,6 +260,32 @@ var server = http.createServer(async function (req, res) {
       return json(res, 200, { count: all.length, leads: all.slice(0, limit) });
     }
 
+    // GET /api/queue (auth) — le travail actionnable, trié par priorité puis
+    // ancienneté. C'est la source de vérité du worker Cronos : « que dois-je
+    // traiter maintenant ? »
+    if (p === "/api/queue" && method === "GET") {
+      if (!requireAuth(req, res)) return;
+      var actionable = readLeads().filter(isActionable);
+      actionable.sort(function (a, b) {
+        var pa = (a.triage && a.triage.priority) || 2, pb = (b.triage && b.triage.priority) || 2;
+        if (pb !== pa) return pb - pa;
+        return (a.receivedAt || "").localeCompare(b.receivedAt || "");
+      });
+      var qlimit = parseInt(u.searchParams.get("limit") || "20", 10);
+      return json(res, 200, { count: actionable.length, leads: actionable.slice(0, qlimit) });
+    }
+
+    // POST /api/leads/<id>/claim (auth) — verrou de traitement (bail)
+    var mClaim = p.match(/^\/api\/leads\/([\w-]+)\/claim$/);
+    if (mClaim && method === "POST") {
+      if (!requireAuth(req, res)) return;
+      var cbody = await readBody(req) || {};
+      var agent = String(cbody.agent || "cronos");
+      var claimed = await claimLead(mClaim[1], agent, cbody.ttlSeconds);
+      if (claimed.code === 200) return json(res, 200, claimed.lead);
+      return json(res, claimed.code, { error: claimed.error || "lead introuvable", lease: claimed.lease });
+    }
+
     // GET/PATCH /api/leads/<id> (auth)
     var mLead = p.match(/^\/api\/leads\/([\w-]+)$/);
     if (mLead) {
@@ -218,7 +297,7 @@ var server = http.createServer(async function (req, res) {
       }
       if (method === "PATCH") {
         var patch = await readBody(req) || {};
-        var up = await updateLead(id, patch);
+        var up = await updateLead(id, patch, patch.actor);
         return up ? json(res, 200, up) : json(res, 404, { error: "lead introuvable" });
       }
     }

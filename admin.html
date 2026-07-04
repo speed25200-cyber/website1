@@ -273,6 +273,9 @@
       '</div>'+
       '<div class="sect">Notes internes</div>'+
       '<textarea id="d-notes" rows="3" placeholder="Notes de suivi…">'+esc(l.notes||"")+'</textarea>'+
+      ((l.history&&l.history.length)?'<div class="sect">Historique (audit)</div><div>'+l.history.map(function(h){
+        return '<div style="font-size:12.5px;padding:3px 0;border-bottom:1px solid var(--line)"><span class="muted">'+fmtDate(h.at)+'</span> · <b>'+esc(h.event)+'</b>'+(h.detail?' <span class="muted">— '+esc(h.detail)+'</span>':'')+'</div>';
+      }).join("")+'</div>':"")+
       '<div class="sect">Statut</div>'+
       '<select id="d-status">'+["new","in_progress","done","archived"].map(function(s){return '<option value="'+s+'"'+((l.status||"new")===s?" selected":"")+'>'+stLabel(s)+'</option>'}).join("")+'</select>'+
       '<div class="row-actions" style="margin-top:14px">'+

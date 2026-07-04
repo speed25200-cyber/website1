@@ -31,6 +31,8 @@ docker run -p 8787:8787 -e FC_API_TOKEN=xxxx fri-consult-api
 | `GET` | `/api/leads` | 🔒 | liste les leads (`?status=`, `?limit=`) |
 | `GET` | `/api/leads/<id>` | 🔒 | un lead |
 | `PATCH` | `/api/leads/<id>` | 🔒 | traite : `status` / `notes` / `response` / `assignee` |
+| `GET` | `/api/queue` | 🔒 | travail **actionnable** (trié priorité puis ancienneté) |
+| `POST` | `/api/leads/<id>/claim` | 🔒 | **verrou de traitement** (bail `{agent, ttlSeconds}`) |
 | `GET` | `/api/stats` | 🔒 | agrégats de la file (statut / catégorie / priorité) |
 | `GET` | `/admin` | – | **console Cronos / conseiller** (auth via les appels API) |
 
@@ -38,9 +40,22 @@ docker run -p 8787:8787 -e FC_API_TOKEN=xxxx fri-consult-api
 
 `collection` ∈ `site, services, posts, testimonials, faq`. Toute écriture est **validée contre le schéma** ; en cas d'erreur → `422` avec le détail.
 
-## Cronos : traitement des demandes
+## Cronos : traitement 100 % autonome des demandes
 
-Toute demande POSTée sur `/api/leads` est **pré-triée** par [`intake.js`](intake.js) (déterministe, sans IA) : un objet `triage` (catégorie, priorité 1-4 + SLA, `urgent`/`complaint`, tags, résumé, brouillon d'accusé de réception multilingue) est attaché au lead. **Cronos** (l'agent) relève la file, rédige la vraie réponse conseil et clôture via `PATCH`. Boucle complète : [`../AGENT.md`](../AGENT.md) §7. Interface web équivalente : `/admin`.
+Toute demande POSTée sur `/api/leads` est **pré-triée** par [`intake.js`](intake.js) (déterministe, sans IA) : un objet `triage` (catégorie, priorité 1-4 + SLA, `urgent`/`complaint`, tags, résumé, brouillon d'accusé de réception multilingue) est attaché au lead, et chaque transition est journalisée dans `lead.history[]`.
+
+Le **worker autonome** [`cronos-worker.js`](cronos-worker.js) relie cette file aux **agents LLM locaux** du projet Cronos Code (endpoint compatible OpenAI : Ollama, LM Studio, llama.cpp-server) :
+
+```bash
+# Boucle autonome : file → claim (bail anti-doublon) → LLM local → garde-fous → done
+FC_API_TOKEN=xxx node cronos-worker.js run           # en continu
+FC_API_TOKEN=xxx node cronos-worker.js run --once    # vide la file puis s'arrête
+
+# Piloté commande par commande (sortie JSON pour un agent) :
+node cronos-worker.js queue | next | show <id> | complete <id> --response … | stats
+```
+
+Garde-fous intégrés : réponse dans la langue du client, **aucun prix chiffré** (rejet automatique), longueur bornée ; en cas d'échec/indisponibilité du LLM, envoi du brouillon déterministe (dégradé, jamais bloqué). Protocole complet : [`../AGENT.md`](../AGENT.md) §7. Supervision humaine : `/admin`.
 
 ## Exemples
 

@@ -58,5 +58,18 @@
     "description": "Les formulaires émettent un objet 'lead' structuré. Il est envoyé à site.forms.leadWebhook (si défini) et, à plat, au service e-mail FormSubmit.",
     "delivery": ["email (FormSubmit)", "webhook (site.forms.leadWebhook)"]
   },
+  "agent": {
+    "contract": "fri-consult/agent-queue@1",
+    "description": "Protocole de traitement autonome des demandes par Cronos Code (agents LLM locaux). Toutes les demandes du site convergent vers une file unique, pré-triée à l'entrée (server/intake.js).",
+    "auth": "Authorization: Bearer <FC_API_TOKEN>",
+    "endpoints": {
+      "queue": "GET /api/queue?limit=N — travail actionnable, trié par priorité puis ancienneté",
+      "claim": "POST /api/leads/{id}/claim {agent, ttlSeconds} — verrou de traitement (bail) ; 409 si déjà réclamé",
+      "update": "PATCH /api/leads/{id} {actor, response, status, notes} — enregistre la réponse et clôture (status: done)",
+      "stats": "GET /api/stats — agrégats de la file"
+    },
+    "worker": "server/cronos-worker.js — boucle autonome prête à l'emploi (LLM local compatible OpenAI + repli déterministe) ou outil piloté commande par commande",
+    "audit": "chaque transition est journalisée dans lead.history[]"
+  },
   "icons": ["shield","heart","car","home","building","scale","plane","piggy","briefcase","key","paw","umbrella","coins","doc","spark","users","globe","lock","handshake","chat","phone","mail","pin","clock"]
 }
