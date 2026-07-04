@@ -1,0 +1,19 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://www.fri-consult.ch/content/schema/service.schema.json",
+  "title": "Collection de services / domaines d'assurance",
+  "type": "array",
+  "items": {
+    "type": "object",
+    "additionalProperties": false,
+    "required": ["id", "icon", "title", "tag", "short", "points"],
+    "properties": {
+      "id": { "type": "string", "pattern": "^[a-z0-9-]+$", "description": "Identifiant unique et stable (utilisé dans les URLs/ancres). Ne pas changer une fois publié." },
+      "icon": { "type": "string", "enum": ["shield","heart","car","home","building","scale","plane","piggy","briefcase","key","paw","umbrella","coins","doc","spark","users","globe","lock","handshake"], "description": "Nom d'icône (voir la bibliothèque ICONS)." },
+      "title": { "type": "string", "minLength": 2, "maxLength": 60 },
+      "tag": { "type": "string", "maxLength": 60, "description": "Sous-titre court (badge)." },
+      "short": { "type": "string", "minLength": 10, "maxLength": 240, "description": "Description d'une à deux phrases." },
+      "points": { "type": "array", "minItems": 1, "maxItems": 8, "items": { "type": "string", "maxLength": 80 }, "description": "Points clés de couverture." }
+    }
+  }
+}

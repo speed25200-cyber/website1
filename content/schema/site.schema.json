@@ -1,0 +1,47 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://www.fri-consult.ch/content/schema/site.schema.json",
+  "title": "Configuration globale du site",
+  "type": "object",
+  "required": ["brand", "legalName", "contact"],
+  "properties": {
+    "$schema": { "type": "string" },
+    "version": { "type": "integer", "description": "Incrémenter à chaque modification pour invalider les caches." },
+    "brand": { "type": "string" },
+    "legalName": { "type": "string" },
+    "tagline": { "type": "string" },
+    "contact": {
+      "type": "object",
+      "required": ["email", "phone", "street", "zip", "city"],
+      "properties": {
+        "email": { "type": "string", "format": "email", "description": "Reçoit les demandes d'offre et messages." },
+        "phone": { "type": "string" },
+        "phoneHref": { "type": "string", "description": "Lien tel: (ex. tel:+41264110000)." },
+        "whatsapp": { "type": "string", "description": "Numéro international sans + ni espaces (ex. 41790000000). Active le bouton WhatsApp." },
+        "street": { "type": "string" },
+        "zip": { "type": "string" },
+        "city": { "type": "string" },
+        "canton": { "type": "string" },
+        "country": { "type": "string" },
+        "uid": { "type": "string" },
+        "mapQuery": { "type": "string" },
+        "hours": {
+          "type": "array",
+          "items": { "type": "object", "required": ["d", "h"], "properties": { "d": { "type": "string" }, "h": { "type": "string" } } }
+        }
+      }
+    },
+    "social": {
+      "type": "object",
+      "properties": { "linkedin": { "type": "string" }, "facebook": { "type": "string" }, "instagram": { "type": "string" } }
+    },
+    "forms": {
+      "type": "object",
+      "properties": {
+        "formEndpoint": { "type": "string", "description": "Base de l'endpoint d'envoi e-mail (FormSubmit par défaut)." },
+        "leadWebhook": { "type": "string", "description": "URL optionnelle : reçoit une copie JSON structurée de chaque demande (pour l'app iOS / le CRM / Cronos)." },
+        "leadWebhookHeaders": { "type": "object", "description": "En-têtes HTTP additionnels pour le webhook (ex. clé d'API).", "additionalProperties": { "type": "string" } }
+      }
+    }
+  }
+}

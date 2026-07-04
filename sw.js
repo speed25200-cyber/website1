@@ -3,7 +3,7 @@
    Stratégie : network-first pour les pages, stale-while-revalidate pour
    les ressources statiques. Repli hors-ligne dédié.
    ========================================================================= */
-var VERSION = "fc-v5";
+var VERSION = "fc-v6";
 var CORE = [
   "index.html",
   "assurances.html",
@@ -27,6 +27,12 @@ var CORE = [
   "assets/js/calc.js",
   "assets/img/favicon.svg",
   "site.webmanifest",
+  "content/manifest.json",
+  "content/site.json",
+  "content/services.json",
+  "content/posts.json",
+  "content/testimonials.json",
+  "content/faq.json",
 ];
 
 self.addEventListener("install", function (e) {
@@ -52,6 +58,19 @@ self.addEventListener("fetch", function (e) {
   if (req.method !== "GET") return;
   var url = new URL(req.url);
   if (url.origin !== self.location.origin) return; // ne pas intercepter les tiers (carte, formsubmit)
+
+  // Contenu (content/*.json) : network-first pour refléter vite les mises à
+  // jour de l'agent/CMS, repli sur le cache hors-ligne.
+  if (url.pathname.indexOf("/content/") !== -1) {
+    e.respondWith(
+      fetch(req).then(function (res) {
+        var copy = res.clone();
+        caches.open(VERSION).then(function (c) { c.put(req, copy); });
+        return res;
+      }).catch(function () { return caches.match(req); })
+    );
+    return;
+  }
 
   // Pages : network-first, repli cache puis offline.html
   if (req.mode === "navigate") {

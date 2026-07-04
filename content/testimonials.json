@@ -1,0 +1,8 @@
+[
+  { "id": "t1", "initials": "SM", "name": "Sophie M.", "location": "Fribourg", "rating": 5,
+    "quote": "En un rendez-vous, ils ont réduit ma prime maladie de plus de 700 francs par an, avec une meilleure couverture. Enfin quelqu'un qui explique clairement." },
+  { "id": "t2", "initials": "LB", "name": "Laurent B.", "location": "Indépendant, Bulle", "rating": 5,
+    "quote": "Un seul interlocuteur pour l'entreprise et le privé. Réactifs lors d'un sinistre, de bons conseils sur le 3e pilier. Je recommande sans hésiter." },
+  { "id": "t3", "initials": "NC", "name": "Nadia C.", "location": "Rossens", "rating": 5,
+    "quote": "Accompagnement humain et transparent pour notre financement immobilier et nos assurances. On se sent vraiment conseillés, pas vendus." }
+]

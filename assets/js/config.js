@@ -1,14 +1,15 @@
 /* =========================================================================
-   Fri-Consult — Configuration centrale
+   Fri-Consult — Configuration de secours (fallback)
    -------------------------------------------------------------------------
-   ⚙️  MODIFIEZ CE FICHIER pour mettre à jour les coordonnées partout sur
-   le site (en-tête, pied de page, page contact, formulaires).
+   ℹ️  DEPUIS LE PASSAGE EN CMS HEADLESS, LA SOURCE DE VÉRITÉ EST
+       « content/site.json » (édité par Cronos / l'app iOS / via Git).
+       Ce fichier ne sert plus que de repli si le fetch de site.json échoue
+       (ex. ouverture en file://). Gardez-le synchronisé par sécurité.
 
-   ▸ contact.email  : adresse qui reçoit les demandes d'offre.
-     Le formulaire utilise FormSubmit.co (aucune inscription requise).
-     ⚠️ À la 1re demande envoyée, FormSubmit vous enverra un e-mail
-        d'activation à confirmer une seule fois.
-   ▸ contact.phone  : ⚠️ numéro à confirmer/renseigner (placeholder actuel).
+   ▸ contact.email  : adresse qui reçoit les demandes d'offre (FormSubmit).
+   ▸ contact.phone  : ⚠️ placeholder à renseigner.
+   ▸ forms.leadWebhook : URL optionnelle recevant chaque demande en JSON
+       structuré (contrat fri-consult/lead@1) pour l'app iOS / le CRM.
    ========================================================================= */
 window.SITE_CONFIG = {
   brand: "Fri-Consult",
@@ -41,7 +42,12 @@ window.SITE_CONFIG = {
     instagram: "",
   },
 
-  // Point de collecte du formulaire. Par défaut : FormSubmit (sans compte).
-  // Pour un autre service (Formspree, Web3Forms…), remplacez l'URL.
+  // Endpoints de formulaire (repli ; voir content/site.json → "forms").
+  forms: {
+    formEndpoint: "https://formsubmit.co/ajax/",
+    leadWebhook: "",
+    leadWebhookHeaders: {},
+  },
+  // Back-compat : conservé pour les anciens appels.
   formEndpoint: "https://formsubmit.co/ajax/",
 };

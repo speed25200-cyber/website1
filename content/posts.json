@@ -1,0 +1,14 @@
+[
+  { "id": "conseil-lamal", "icon": "heart", "cat": "Assurance maladie", "mins": 6,
+    "title": "LAMal : 6 leviers pour réduire votre prime sans perdre en couverture",
+    "excerpt": "Franchise, modèle d'assurance, caisse : quelques ajustements bien pensés peuvent alléger votre prime de plusieurs centaines de francs par an." },
+  { "id": "conseil-3e-pilier", "icon": "piggy", "cat": "Prévoyance", "mins": 7,
+    "title": "3e pilier : épargner pour la retraite tout en réduisant ses impôts",
+    "excerpt": "Le pilier 3a est l'un des outils les plus efficaces en Suisse pour préparer sa retraite et diminuer sa charge fiscale. Mode d'emploi." },
+  { "id": "conseil-resiliation", "icon": "doc", "cat": "Pratique", "mins": 5,
+    "title": "Changer d'assurance en Suisse : délais et calendrier de résiliation",
+    "excerpt": "Assurance de base, complémentaires, RC, véhicule : chaque contrat a ses règles. Le calendrier à connaître pour ne pas rater le coche." },
+  { "id": "conseil-menage-rc", "icon": "home", "cat": "Ménage & RC", "mins": 5,
+    "title": "RC privée et assurance ménage : ce qui est vraiment couvert",
+    "excerpt": "Dégât des eaux, casse, vol, dommages causés à autrui : on démêle ce que couvrent — ou non — ces deux assurances essentielles du quotidien." }
+]

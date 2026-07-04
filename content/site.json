@@ -1,0 +1,31 @@
+{
+  "$schema": "./schema/site.schema.json",
+  "version": 1,
+  "brand": "Fri-Consult",
+  "legalName": "Fri-Consult Sàrl",
+  "tagline": "Votre courtier en assurances en Suisse",
+  "contact": {
+    "email": "info@fri-consult.ch",
+    "phone": "+41 26 411 00 00",
+    "phoneHref": "tel:+41264110000",
+    "whatsapp": "",
+    "street": "Zone Industrielle Din Riaux 34",
+    "zip": "1728",
+    "city": "Rossens",
+    "canton": "Fribourg",
+    "country": "Suisse",
+    "uid": "CHE-193.130.760",
+    "mapQuery": "Zone Industrielle Din Riaux 34, 1728 Rossens, Suisse",
+    "hours": [
+      { "d": "Lundi – Vendredi", "h": "08:00 – 18:00" },
+      { "d": "Samedi", "h": "Sur rendez-vous" },
+      { "d": "Dimanche", "h": "Fermé" }
+    ]
+  },
+  "social": { "linkedin": "", "facebook": "", "instagram": "" },
+  "forms": {
+    "formEndpoint": "https://formsubmit.co/ajax/",
+    "leadWebhook": "",
+    "leadWebhookHeaders": {}
+  }
+}

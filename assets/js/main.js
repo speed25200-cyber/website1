@@ -129,6 +129,93 @@
     if (full) full.innerHTML = render(window.POSTS);
   }
 
+  /* ---------- Témoignages (source de secours ; content/testimonials.json fait foi) ---------- */
+  window.TESTIMONIALS = [
+    { id: "t1", initials: "SM", name: "Sophie M.", location: "Fribourg", rating: 5,
+      quote: "En un rendez-vous, ils ont réduit ma prime maladie de plus de 700 francs par an, avec une meilleure couverture. Enfin quelqu'un qui explique clairement." },
+    { id: "t2", initials: "LB", name: "Laurent B.", location: "Indépendant, Bulle", rating: 5,
+      quote: "Un seul interlocuteur pour l'entreprise et le privé. Réactifs lors d'un sinistre, de bons conseils sur le 3e pilier. Je recommande sans hésiter." },
+    { id: "t3", initials: "NC", name: "Nadia C.", location: "Rossens", rating: 5,
+      quote: "Accompagnement humain et transparent pour notre financement immobilier et nos assurances. On se sent vraiment conseillés, pas vendus." },
+  ];
+  function esc(s) { return String(s == null ? "" : s).replace(/[<>&]/g, function (c) { return ({ "<": "&lt;", ">": "&gt;", "&": "&amp;" })[c]; }); }
+  function renderTestimonials() {
+    var g = document.getElementById("testimonials-grid");
+    if (!g) return;
+    g.innerHTML = window.TESTIMONIALS.map(function (t, i) {
+      var stars = "★★★★★".slice(0, Math.max(0, Math.min(5, t.rating || 5)));
+      return '<figure class="quote-card" data-reveal data-reveal-delay="' + (i % 3) + '">' +
+        '<div class="stars" aria-label="' + (t.rating || 5) + ' sur 5">' + stars + '</div>' +
+        '<blockquote>« ' + esc(t.quote) + ' »</blockquote>' +
+        '<figcaption class="who"><span class="avatar">' + esc(t.initials) + '</span>' +
+        '<span class="meta"><b>' + esc(t.name) + '</b><span>' + esc(t.location || "") + '</span></span></figcaption>' +
+      '</figure>';
+    }).join("");
+  }
+
+  /* ---------- FAQ (source de secours ; content/faq.json fait foi) ---------- */
+  window.FAQ = [
+    { id: "gratuit", q: "Le conseil de Fri-Consult est-il vraiment gratuit ?", a: "Oui, totalement. En tant que courtier, nous sommes rémunérés par les compagnies d'assurance lorsqu'un contrat est conclu. Vous ne payez rien, et cette rémunération n'influence jamais nos recommandations : nous restons indépendants et neutres." },
+    { id: "obligation", q: "Suis-je obligé de changer d'assurance ?", a: "Absolument pas. Nous établissons un comparatif et vous conseillons, mais la décision finale vous appartient toujours. Si vos contrats actuels sont déjà optimaux, nous vous le dirons honnêtement." },
+    { id: "domaines", q: "Quelles assurances pouvez-vous gérer ?", a: "Tous les types d'assurance en Suisse : maladie (LAMal et complémentaires), véhicules, ménage et RC privée, protection juridique, voyage, prévoyance et 3e pilier, assurances pour entreprises et indépendants, ainsi que le financement immobilier et les hypothèques." },
+    { id: "changement", q: "Comment se déroule un changement d'assurance ?", a: "Nous nous occupons de tout : analyse, comparaison, préparation des documents, résiliation de vos anciens contrats dans les délais légaux et souscription des nouveaux. Vous n'avez qu'à signer." },
+    { id: "donnees", q: "Mes données personnelles sont-elles protégées ?", a: "Oui. Vos données sont traitées de manière strictement confidentielle, uniquement pour établir vos offres, et ne sont jamais revendues. Consultez notre politique de confidentialité." },
+  ];
+  function renderFaq() {
+    var wrap = document.getElementById("faq-list");
+    if (!wrap) return;
+    wrap.innerHTML = window.FAQ.map(function (f) {
+      return '<div class="faq-item">' +
+        '<button class="faq-q" aria-expanded="false">' + esc(f.q) + '<span class="plus"></span></button>' +
+        '<div class="faq-a"><div class="faq-a-inner">' + esc(f.a) + '</div></div>' +
+      '</div>';
+    }).join("");
+  }
+  function injectFaqSchema() {
+    if (!document.getElementById("faq-list") || !window.FAQ || !window.FAQ.length) return;
+    var data = { "@context": "https://schema.org", "@type": "FAQPage", mainEntity: window.FAQ.map(function (f) {
+      return { "@type": "Question", name: f.q, acceptedAnswer: { "@type": "Answer", text: f.a } };
+    }) };
+    var s = document.createElement("script");
+    s.type = "application/ld+json";
+    s.textContent = JSON.stringify(data);
+    document.head.appendChild(s);
+  }
+
+  /* ---------- Chargement du contenu (CMS headless : content/*.json fait foi) ---------- */
+  function loadJSON(path) {
+    return fetch(path, { cache: "no-cache" }).then(function (r) { return r.ok ? r.json() : null; }).catch(function () { return null; });
+  }
+  function loadContent() {
+    // Sur file:// le fetch échoue → on garde les valeurs de secours embarquées.
+    if (location.protocol === "file:") return Promise.resolve();
+    var base = (window.CONTENT_BASE || "content/");
+    return Promise.all([
+      loadJSON(base + "site.json"),
+      loadJSON(base + "services.json"),
+      loadJSON(base + "posts.json"),
+      loadJSON(base + "testimonials.json"),
+      loadJSON(base + "faq.json"),
+    ]).then(function (res) {
+      var site = res[0];
+      if (site && typeof site === "object") {
+        if (site.brand) CFG.brand = site.brand;
+        if (site.legalName) CFG.legalName = site.legalName;
+        if (site.tagline) CFG.tagline = site.tagline;
+        if (site.contact) Object.assign(C, site.contact);        // mutation en place → C reste valide
+        if (site.social) CFG.social = site.social;
+        if (site.forms) {
+          CFG.forms = site.forms;
+          if (site.forms.formEndpoint) CFG.formEndpoint = site.forms.formEndpoint;
+        }
+      }
+      if (Array.isArray(res[1]) && res[1].length) window.SERVICES = res[1];
+      if (Array.isArray(res[2]) && res[2].length) window.POSTS = res[2];
+      if (Array.isArray(res[3]) && res[3].length) window.TESTIMONIALS = res[3];
+      if (Array.isArray(res[4]) && res[4].length) window.FAQ = res[4];
+    }).catch(function () {});
+  }
+
   /* ---------- Navigation partagée ---------- */
   var NAV_ITEMS = [
     { href: "index.html", label: "Accueil" },
@@ -480,11 +567,13 @@
   }
 
   /* ---------- Init ---------- */
-  document.addEventListener("DOMContentLoaded", function () {
+  function boot() {
     buildHeader();
     buildFooter();
     renderServices();
     renderPosts();
+    renderTestimonials();
+    renderFaq();
     fillConfig();
     initTheme();
     initScrollUI();
@@ -493,8 +582,16 @@
     initReveal();
     initCounters();
     initFaq();
+    injectFaqSchema();
     initParallax();
     injectBreadcrumb();
     initSW();
+    if (window.FC_FORMS && window.FC_FORMS.boot) window.FC_FORMS.boot();
+  }
+
+  document.addEventListener("DOMContentLoaded", function () {
+    // Charge le contenu (content/*.json) puis rend le site. Repli sur les
+    // valeurs embarquées si le fetch échoue → le site n'est jamais vide.
+    loadContent().then(boot, boot);
   });
 })();

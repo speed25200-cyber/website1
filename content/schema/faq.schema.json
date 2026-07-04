@@ -1,0 +1,16 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://www.fri-consult.ch/content/schema/faq.schema.json",
+  "title": "Collection de questions fréquentes",
+  "type": "array",
+  "items": {
+    "type": "object",
+    "additionalProperties": false,
+    "required": ["id", "q", "a"],
+    "properties": {
+      "id": { "type": "string", "pattern": "^[a-z0-9-]+$" },
+      "q": { "type": "string", "minLength": 5, "maxLength": 160, "description": "Question." },
+      "a": { "type": "string", "minLength": 10, "maxLength": 800, "description": "Réponse (texte simple)." }
+    }
+  }
+}

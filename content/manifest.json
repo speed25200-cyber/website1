@@ -1,0 +1,54 @@
+{
+  "name": "Fri-Consult — API de contenu (headless)",
+  "description": "Index machine-lisible du contenu du site. Point d'entrée pour l'agent Cronos et l'app iOS. Le contenu est piloté par ces fichiers JSON ; le site se rend automatiquement à partir d'eux.",
+  "contract": "fri-consult/content@1",
+  "baseUrl": "https://www.fri-consult.ch/content/",
+  "updatedVia": "git",
+  "collections": {
+    "site": {
+      "kind": "object",
+      "path": "site.json",
+      "schema": "schema/site.schema.json",
+      "description": "Configuration globale : marque, coordonnées, horaires, réseaux, endpoints de formulaire."
+    },
+    "services": {
+      "kind": "array",
+      "path": "services.json",
+      "schema": "schema/service.schema.json",
+      "idField": "id",
+      "renderedOn": ["index.html", "assurances.html", "demande-offre.html (choix)"],
+      "description": "Domaines d'assurance proposés."
+    },
+    "posts": {
+      "kind": "array",
+      "path": "posts.json",
+      "schema": "schema/post.schema.json",
+      "idField": "id",
+      "renderedOn": ["index.html", "conseils.html"],
+      "note": "Chaque post référence un fichier <id>.html contenant le corps de l'article.",
+      "description": "Métadonnées des articles / conseils."
+    },
+    "testimonials": {
+      "kind": "array",
+      "path": "testimonials.json",
+      "schema": "schema/testimonial.schema.json",
+      "idField": "id",
+      "renderedOn": ["index.html"],
+      "description": "Témoignages clients."
+    },
+    "faq": {
+      "kind": "array",
+      "path": "faq.json",
+      "schema": "schema/faq.schema.json",
+      "idField": "id",
+      "renderedOn": ["index.html"],
+      "description": "Questions fréquentes (alimente aussi le JSON-LD FAQPage)."
+    }
+  },
+  "leads": {
+    "schema": "schema/lead.schema.json",
+    "description": "Les formulaires émettent un objet 'lead' structuré. Il est envoyé à site.forms.leadWebhook (si défini) et, à plat, au service e-mail FormSubmit.",
+    "delivery": ["email (FormSubmit)", "webhook (site.forms.leadWebhook)"]
+  },
+  "icons": ["shield","heart","car","home","building","scale","plane","piggy","briefcase","key","paw","umbrella","coins","doc","spark","users","globe","lock","handshake","chat","phone","mail","pin","clock"]
+}

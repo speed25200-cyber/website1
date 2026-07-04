@@ -2,6 +2,16 @@
 
 Site vitrine moderne pour **Fri-Consult Sàrl**, courtier en assurances indépendant en Suisse (Rossens, canton de Fribourg). Design épuré « style Apple », 100 % statique, sans dépendance ni étape de build — déployable partout (GitHub Pages, Netlify, Infomaniak, n'importe quel hébergement).
 
+## 🤖 Contenu piloté par les données (CMS headless)
+
+Le site est **piloté par des fichiers JSON** dans [`content/`](content/) (services, articles, FAQ, témoignages, coordonnées), validés par des **JSON Schema** — pensé pour être géré par un **agent IA (Cronos)** et une **app iOS**, sans toucher au HTML.
+
+- Point d'entrée machine : [`content/manifest.json`](content/manifest.json).
+- Guide de gestion (édition via Git, schémas, leads/webhook, contrat d'API) : **[`AGENT.md`](AGENT.md)**.
+- Les demandes d'offre émettent un **lead JSON structuré** (`content/schema/lead.schema.json`) livré par e-mail **et** par webhook configurable (`content/site.json → forms.leadWebhook`) — prêt pour l'app iOS / un CRM.
+
+Le site reste 100 % statique : rendu côté client à partir des JSON, avec repli sur des valeurs embarquées si le contenu est indisponible (jamais de page vide).
+
 ## ✨ Fonctionnalités
 
 - **Mode sombre** complet : bascule dans l'en-tête, détection `prefers-color-scheme`, mémorisation, sans flash au chargement.

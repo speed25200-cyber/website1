@@ -7,7 +7,6 @@
   var CFG = window.SITE_CONFIG || {};
   var C = CFG.contact || {};
   var I = window.ICONS || {};
-  var SERVICES = window.SERVICES || [];
 
   function esc(s) { return String(s == null ? "" : s).replace(/[<>&"]/g, function (c) { return ({ "<": "&lt;", ">": "&gt;", "&": "&amp;", '"': "&quot;" })[c]; }); }
   function qs(sel, ctx) { return (ctx || document).querySelector(sel); }
@@ -15,22 +14,33 @@
 
   var CANTONS = ["Fribourg", "Vaud", "Genève", "Valais", "Neuchâtel", "Berne", "Jura", "Zurich", "Autre canton"];
 
-  async function sendPayload(payload) {
-    // 1) Tentative FormSubmit (AJAX JSON)
-    try {
-      var res = await fetch(CFG.formEndpoint + encodeURIComponent(C.email), {
+  function nowISO() { try { return new Date().toISOString(); } catch (e) { return ""; } }
+
+  // Livraison multi-canal : e-mail (FormSubmit) + webhook JSON structuré (app/CRM/Cronos).
+  // Succès si au moins un canal aboutit.
+  async function deliver(flat, lead) {
+    var forms = CFG.forms || {};
+    var tasks = [];
+    if (C.email && CFG.formEndpoint) {
+      tasks.push(fetch(CFG.formEndpoint + encodeURIComponent(C.email), {
         method: "POST",
         headers: { "Content-Type": "application/json", "Accept": "application/json" },
-        body: JSON.stringify(payload),
-      });
-      if (res.ok) {
-        var data = await res.json().catch(function () { return {}; });
-        if (data.success === "true" || data.success === true || res.status === 200) return { ok: true };
-      }
-      throw new Error("HTTP " + res.status);
-    } catch (e) {
-      return { ok: false, error: e };
+        body: JSON.stringify(flat),
+      }).then(function (r) {
+        if (!r.ok) return false;
+        return r.json().then(function (d) { return d && (d.success === "true" || d.success === true); }).catch(function () { return true; });
+      }).catch(function () { return false; }));
     }
+    if (forms.leadWebhook) {
+      var headers = { "Content-Type": "application/json" };
+      var extra = forms.leadWebhookHeaders || {};
+      Object.keys(extra).forEach(function (k) { headers[k] = extra[k]; });
+      tasks.push(fetch(forms.leadWebhook, { method: "POST", headers: headers, body: JSON.stringify(lead) })
+        .then(function (r) { return r.ok; }).catch(function () { return false; }));
+    }
+    if (!tasks.length) return { ok: false };
+    var results = await Promise.all(tasks);
+    return { ok: results.some(Boolean) };
   }
 
   function mailtoFallback(subject, bodyText) {
@@ -43,9 +53,10 @@
     var root = qs("#quote-wizard");
     if (!root) return;
 
-    // Rendu des chips de choix
+    // Rendu des chips de choix (lit window.SERVICES au moment du rendu → contenu à jour)
+    var services = window.SERVICES || [];
     var choiceGrid = qs("#choice-grid", root);
-    choiceGrid.innerHTML = SERVICES.map(function (s) {
+    choiceGrid.innerHTML = services.map(function (s) {
       return '<label class="choice">' +
         '<input type="checkbox" name="assurances" value="' + esc(s.title) + '" data-id="' + s.id + '">' +
         '<span class="c-ico">' + (I[s.icon] || I.shield) + '</span>' +
@@ -170,13 +181,37 @@
         _template: "table",
       };
 
+      // Lead structuré (contract fri-consult/lead@1) pour l'app iOS / le CRM / Cronos
+      var lead = {
+        schema: "fri-consult/lead@1",
+        type: "quote",
+        source: "demande-offre.html",
+        createdAt: nowISO(),
+        locale: "fr-CH",
+        insurances: types,
+        profile: {
+          status: get("f-statut"),
+          canton: get("f-canton"),
+          birthdate: get("f-naissance"),
+          callback: get("f-rappel"),
+        },
+        contact: {
+          firstName: get("f-prenom"),
+          lastName: get("f-nom"),
+          email: get("f-email"),
+          phone: get("f-phone"),
+        },
+        message: get("f-message"),
+        consent: !!(consent && consent.checked),
+      };
+
       submitBtn.disabled = true;
       var oldLabel = submitBtn.innerHTML;
       submitBtn.innerHTML = "Envoi en cours…";
       statusEl.className = "form-status";
       statusEl.textContent = "";
 
-      var result = await sendPayload(payload);
+      var result = await deliver(payload, lead);
 
       if (result.ok) {
         qs("#quote-form-inner", root).style.display = "none";
@@ -230,11 +265,23 @@
         _template: "table",
       };
 
+      var lead = {
+        schema: "fri-consult/lead@1",
+        type: "contact",
+        source: "contact.html",
+        createdAt: nowISO(),
+        locale: "fr-CH",
+        contact: { firstName: "", lastName: val("nom"), email: val("email"), phone: val("phone") },
+        subject: val("sujet"),
+        message: val("message"),
+        consent: !!(form.elements["consent"] && form.elements["consent"].checked),
+      };
+
       btn.disabled = true;
       var old = btn.innerHTML; btn.innerHTML = "Envoi…";
       statusEl.className = "form-status"; statusEl.textContent = "";
 
-      var result = await sendPayload(payload);
+      var result = await deliver(payload, lead);
       if (result.ok) {
         form.reset();
         statusEl.className = "form-status";
@@ -256,8 +303,19 @@
     });
   }
 
-  document.addEventListener("DOMContentLoaded", function () {
+  // Exposé pour que main.js déclenche l'init APRÈS le chargement du contenu
+  // (les chips de l'assistant utilisent window.SERVICES à jour). Repli autonome
+  // si main.js n'est pas présent.
+  window.FC_FORMS = { initWizard: initWizard, initContactForm: initContactForm };
+  var fcFormsBooted = false;
+  window.FC_FORMS.boot = function () {
+    if (fcFormsBooted) return;
+    fcFormsBooted = true;
     initWizard();
     initContactForm();
+  };
+  document.addEventListener("DOMContentLoaded", function () {
+    // Repli : si main.js n'a pas démarré les formulaires sous 1,2 s, on le fait.
+    setTimeout(function () { window.FC_FORMS.boot(); }, 1200);
   });
 })();

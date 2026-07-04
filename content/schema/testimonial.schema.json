@@ -1,0 +1,19 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://www.fri-consult.ch/content/schema/testimonial.schema.json",
+  "title": "Collection de témoignages clients",
+  "type": "array",
+  "items": {
+    "type": "object",
+    "additionalProperties": false,
+    "required": ["id", "initials", "name", "quote"],
+    "properties": {
+      "id": { "type": "string", "pattern": "^[a-z0-9-]+$" },
+      "initials": { "type": "string", "minLength": 1, "maxLength": 3 },
+      "name": { "type": "string", "maxLength": 60 },
+      "location": { "type": "string", "maxLength": 60 },
+      "rating": { "type": "integer", "minimum": 1, "maximum": 5, "default": 5 },
+      "quote": { "type": "string", "minLength": 10, "maxLength": 400 }
+    }
+  }
+}

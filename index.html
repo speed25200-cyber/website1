@@ -39,19 +39,6 @@
   "openingHours": "Mo-Fr 08:00-18:00"
 }
 </script>
-<script type="application/ld+json">
-{
-  "@context": "https://schema.org",
-  "@type": "FAQPage",
-  "mainEntity": [
-    { "@type": "Question", "name": "Le conseil de Fri-Consult est-il vraiment gratuit ?", "acceptedAnswer": { "@type": "Answer", "text": "Oui, totalement. En tant que courtier, nous sommes rémunérés par les compagnies d'assurance lorsqu'un contrat est conclu. Vous ne payez rien, et cette rémunération n'influence jamais nos recommandations." } },
-    { "@type": "Question", "name": "Suis-je obligé de changer d'assurance ?", "acceptedAnswer": { "@type": "Answer", "text": "Non. Nous établissons un comparatif et vous conseillons, mais la décision finale vous appartient toujours. Si vos contrats actuels sont déjà optimaux, nous vous le dirons honnêtement." } },
-    { "@type": "Question", "name": "Quelles assurances pouvez-vous gérer ?", "acceptedAnswer": { "@type": "Answer", "text": "Tous les types d'assurance en Suisse : maladie (LAMal et complémentaires), véhicules, ménage et RC privée, protection juridique, voyage, prévoyance et 3e pilier, assurances entreprises et indépendants, ainsi que le financement immobilier et les hypothèques." } },
-    { "@type": "Question", "name": "Comment se déroule un changement d'assurance ?", "acceptedAnswer": { "@type": "Answer", "text": "Nous nous occupons de tout : analyse, comparaison, préparation des documents, résiliation dans les délais légaux et souscription des nouveaux contrats. Vous n'avez qu'à signer." } },
-    { "@type": "Question", "name": "Mes données personnelles sont-elles protégées ?", "acceptedAnswer": { "@type": "Answer", "text": "Oui. Vos données sont traitées de manière strictement confidentielle, uniquement pour établir vos offres, et ne sont jamais revendues." } }
-  ]
-}
-</script>
 </head>
 <body>
 <a class="skip-link" href="#main">Aller au contenu</a>
@@ -217,23 +204,7 @@
         <span class="eyebrow" data-reveal>Ils nous font confiance</span>
         <h2 class="h2" data-reveal data-reveal-delay="1">Des clients sereins, année après année</h2>
       </div>
-      <div class="grid cols-3">
-        <figure class="quote-card" data-reveal>
-          <div class="stars">★★★★★</div>
-          <blockquote>« En un rendez-vous, ils ont réduit ma prime maladie de plus de 700 francs par an, avec une meilleure couverture. Enfin quelqu'un qui explique clairement. »</blockquote>
-          <figcaption class="who"><span class="avatar">SM</span><span class="meta"><b>Sophie M.</b><span>Fribourg</span></span></figcaption>
-        </figure>
-        <figure class="quote-card" data-reveal data-reveal-delay="1">
-          <div class="stars">★★★★★</div>
-          <blockquote>« Un seul interlocuteur pour l'entreprise et le privé. Réactifs lors d'un sinistre, de bons conseils sur le 3e pilier. Je recommande sans hésiter. »</blockquote>
-          <figcaption class="who"><span class="avatar">LB</span><span class="meta"><b>Laurent B.</b><span>Indépendant, Bulle</span></span></figcaption>
-        </figure>
-        <figure class="quote-card" data-reveal data-reveal-delay="2">
-          <div class="stars">★★★★★</div>
-          <blockquote>« Accompagnement humain et transparent pour notre financement immobilier et nos assurances. On se sent vraiment conseillés, pas vendus. »</blockquote>
-          <figcaption class="who"><span class="avatar">NC</span><span class="meta"><b>Nadia C.</b><span>Rossens</span></span></figcaption>
-        </figure>
-      </div>
+      <div class="grid cols-3" id="testimonials-grid"></div>
     </div>
   </section>
 
@@ -259,28 +230,7 @@
         <span class="eyebrow" data-reveal>Questions fréquentes</span>
         <h2 class="h2" data-reveal data-reveal-delay="1">Ce que vous voulez savoir</h2>
       </div>
-      <div class="faq" data-reveal>
-        <div class="faq-item">
-          <button class="faq-q" aria-expanded="false">Le conseil de Fri-Consult est-il vraiment gratuit ?<span class="plus"></span></button>
-          <div class="faq-a"><div class="faq-a-inner">Oui, totalement. En tant que courtier, nous sommes rémunérés par les compagnies d'assurance lorsqu'un contrat est conclu. Vous ne payez rien, et cette rémunération n'influence jamais nos recommandations : nous restons indépendants et neutres.</div></div>
-        </div>
-        <div class="faq-item">
-          <button class="faq-q" aria-expanded="false">Suis-je obligé de changer d'assurance ?<span class="plus"></span></button>
-          <div class="faq-a"><div class="faq-a-inner">Absolument pas. Nous établissons un comparatif et vous conseillons, mais la décision finale vous appartient toujours. Si vos contrats actuels sont déjà optimaux, nous vous le dirons honnêtement.</div></div>
-        </div>
-        <div class="faq-item">
-          <button class="faq-q" aria-expanded="false">Quelles assurances pouvez-vous gérer ?<span class="plus"></span></button>
-          <div class="faq-a"><div class="faq-a-inner">Tous les types d'assurance en Suisse : maladie (LAMal et complémentaires), véhicules, ménage et RC privée, protection juridique, voyage, prévoyance et 3e pilier, assurances pour entreprises et indépendants, ainsi que le financement immobilier et les hypothèques.</div></div>
-        </div>
-        <div class="faq-item">
-          <button class="faq-q" aria-expanded="false">Comment se déroule un changement d'assurance ?<span class="plus"></span></button>
-          <div class="faq-a"><div class="faq-a-inner">Nous nous occupons de tout : analyse, comparaison, préparation des documents, résiliation de vos anciens contrats dans les délais légaux et souscription des nouveaux. Vous n'avez qu'à signer.</div></div>
-        </div>
-        <div class="faq-item">
-          <button class="faq-q" aria-expanded="false">Mes données personnelles sont-elles protégées ?<span class="plus"></span></button>
-          <div class="faq-a"><div class="faq-a-inner">Oui. Vos données sont traitées de manière strictement confidentielle, uniquement pour établir vos offres, et ne sont jamais revendues. Consultez notre <a href="confidentialite.html" style="color:var(--brand-600);text-decoration:underline">politique de confidentialité</a>.</div></div>
-        </div>
-      </div>
+      <div class="faq" id="faq-list" data-reveal></div>
     </div>
   </section>
 

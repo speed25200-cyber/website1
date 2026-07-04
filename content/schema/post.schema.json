@@ -1,0 +1,19 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://www.fri-consult.ch/content/schema/post.schema.json",
+  "title": "Collection d'articles / conseils (métadonnées)",
+  "type": "array",
+  "items": {
+    "type": "object",
+    "additionalProperties": false,
+    "required": ["id", "icon", "cat", "mins", "title", "excerpt"],
+    "properties": {
+      "id": { "type": "string", "pattern": "^[a-z0-9-]+$", "description": "Doit correspondre au fichier <id>.html de l'article." },
+      "icon": { "type": "string", "enum": ["heart","piggy","doc","home","car","scale","shield","coins","spark","plane","building","key"] },
+      "cat": { "type": "string", "maxLength": 40, "description": "Catégorie affichée." },
+      "mins": { "type": "integer", "minimum": 1, "maximum": 60, "description": "Temps de lecture estimé (minutes)." },
+      "title": { "type": "string", "minLength": 10, "maxLength": 120 },
+      "excerpt": { "type": "string", "minLength": 20, "maxLength": 260 }
+    }
+  }
+}
