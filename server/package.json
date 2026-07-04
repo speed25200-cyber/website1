@@ -1,0 +1,13 @@
+{
+  "name": "fri-consult-api",
+  "version": "1.0.0",
+  "private": true,
+  "description": "Backend de référence Fri-Consult : API leads + écriture de contenu (sans dépendance).",
+  "main": "api.js",
+  "type": "commonjs",
+  "engines": { "node": ">=18" },
+  "scripts": {
+    "start": "node api.js",
+    "dev": "node api.js"
+  }
+}

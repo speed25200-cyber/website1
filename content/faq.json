@@ -1,12 +1,27 @@
 [
-  { "id": "gratuit", "q": "Le conseil de Fri-Consult est-il vraiment gratuit ?",
-    "a": "Oui, totalement. En tant que courtier, nous sommes rémunérés par les compagnies d'assurance lorsqu'un contrat est conclu. Vous ne payez rien, et cette rémunération n'influence jamais nos recommandations : nous restons indépendants et neutres." },
-  { "id": "obligation", "q": "Suis-je obligé de changer d'assurance ?",
-    "a": "Absolument pas. Nous établissons un comparatif et vous conseillons, mais la décision finale vous appartient toujours. Si vos contrats actuels sont déjà optimaux, nous vous le dirons honnêtement." },
-  { "id": "domaines", "q": "Quelles assurances pouvez-vous gérer ?",
-    "a": "Tous les types d'assurance en Suisse : maladie (LAMal et complémentaires), véhicules, ménage et RC privée, protection juridique, voyage, prévoyance et 3e pilier, assurances pour entreprises et indépendants, ainsi que le financement immobilier et les hypothèques." },
-  { "id": "changement", "q": "Comment se déroule un changement d'assurance ?",
-    "a": "Nous nous occupons de tout : analyse, comparaison, préparation des documents, résiliation de vos anciens contrats dans les délais légaux et souscription des nouveaux. Vous n'avez qu'à signer." },
-  { "id": "donnees", "q": "Mes données personnelles sont-elles protégées ?",
-    "a": "Oui. Vos données sont traitées de manière strictement confidentielle, uniquement pour établir vos offres, et ne sont jamais revendues. Consultez notre politique de confidentialité." }
+  {
+    "id": "gratuit",
+    "q": "Le conseil de Fri-Consult est-il vraiment gratuit ?",
+    "a": "Oui, totalement. En tant que courtier, nous sommes rémunérés par les compagnies d'assurance lorsqu'un contrat est conclu. Vous ne payez rien, et cette rémunération n'influence jamais nos recommandations : nous restons indépendants et neutres."
+  },
+  {
+    "id": "obligation",
+    "q": "Suis-je obligé de changer d'assurance ?",
+    "a": "Absolument pas. Nous établissons un comparatif et vous conseillons, mais la décision finale vous appartient toujours. Si vos contrats actuels sont déjà optimaux, nous vous le dirons honnêtement."
+  },
+  {
+    "id": "domaines",
+    "q": "Quelles assurances pouvez-vous gérer ?",
+    "a": "Tous les types d'assurance en Suisse : maladie (LAMal et complémentaires), véhicules, ménage et RC privée, protection juridique, voyage, prévoyance et 3e pilier, assurances pour entreprises et indépendants, ainsi que le financement immobilier et les hypothèques."
+  },
+  {
+    "id": "changement",
+    "q": "Comment se déroule un changement d'assurance ?",
+    "a": "Nous nous occupons de tout : analyse, comparaison, préparation des documents, résiliation de vos anciens contrats dans les délais légaux et souscription des nouveaux. Vous n'avez qu'à signer."
+  },
+  {
+    "id": "donnees",
+    "q": "Mes données personnelles sont-elles protégées ?",
+    "a": "Oui. Vos données sont traitées de manière strictement confidentielle, uniquement pour établir vos offres, et ne sont jamais revendues. Consultez notre politique de confidentialité."
+  }
 ]

@@ -1,0 +1,9 @@
+# Données runtime du backend (leads)
+server/data/
+!server/data/.gitkeep
+
+# Dépendances / divers
+node_modules/
+*.log
+.env
+.DS_Store
